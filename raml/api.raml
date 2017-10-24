@@ -1,0 +1,318 @@
+#%RAML 1.0
+title: authorization-server
+mediaType:  application/json
+version: v1
+
+types:
+  User:
+    type: object
+    properties:
+      firstName: string
+      lastName: string
+  AuthorizationInfo:
+    type: object
+    properties:
+      access_token: string
+      expires_in:
+        description: |
+          This is a expiration date of acccess token in secods
+        type: integer
+        default: 8640
+        minimum: 8640
+      refresh_token:
+        type: string
+        required: false
+      token_type:
+        type: string
+        enum: ['Bearer']
+        default: 'Bearer'
+  Authentication:
+    type: object
+    properties:
+      email:
+        type: string
+        required: true
+      password:
+        type: string
+        minLength: 6
+        required: true
+
+/oauth/token:
+  post:
+    description: |
+      This is the OAuth 2.0 grant that highly trusted apps utilize in order to access an API.
+      In this flow the end-user is asked to fill in credentials (username/password)
+      typically using an interactive form in the user-agent (browser).
+      This information is sent to the backend and from there to authorization server.
+      It is therefore imperative that the client is absolutely trusted with this information.
+      For client side applications and mobile apps we recommend using web flows instead.
+    body:
+      application/json:
+        type: object
+        properties:
+          grant_type:
+            description: |
+              Denotes the flow you are using. For *Resource Owner Password* use "password".
+            type: string
+            enum: ["password"]
+            default: "password"
+            required: true
+          client_id:
+            description: |
+              Your application's Client ID.
+            type: string
+            required: true
+          client_secret:
+            description: |
+              Your application's Client Secret.
+            type: string
+            required: true
+          audience:
+            description: |
+              The unique identifier of the target API you want to access.
+            type: string
+            required: false
+          username:
+            description: |
+              Resource Owner's identifier.
+            type: string
+            required: true
+          password:
+            description: |
+              Resource Owner's secret.
+            type: string
+            required: true
+          scope:
+            description: |
+              String value of the different scopes the client is asking for.
+              Multiple scopes are separated with whitespace.
+            type: string
+            required: false
+        example: |
+          {
+            "grant_type": "password",
+            "username": "USERNAME",
+            "password": "PASSWORD",
+            "audience": "API_IDENTIFIER",
+            "scope": "SCOPE",
+            "client_id": "3QBfya9tLgZ0uuTZ20KiYnz4DY4B9O-k",
+            "client_secret": "LveswyAl8MVrdASqR3JQt2n-cNzWDMezPwvLWKj3dGISYOVDgYeT-2Dj2-a_JShi"
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            type: AuthorizationInfo
+            example: |
+              {
+                "access_token": "eyJz93a...k4laUWw",
+                "token_type": "Bearer",
+                "expires_in": 86400,
+                "refresh_token": "YOUR_REFRESH_TOKEN"
+              }
+
+/oauth/refresh:
+  post:
+    description: |
+      Use this endpoint to refresh an access token, using the refresh token you got during authorization.
+    body:
+      application/json:
+        type: object
+        properties:
+          grant_type:
+            description: |
+              Denotes the flow you are using. To refresh a token use "refresh_token".
+            type: string
+            enum: ["refresh_token"]
+            default: "refresh_token"
+            required: true
+          client_id:
+            description: |
+              Your application's Client ID.
+            type: string
+            required: true
+          client_secret:
+            description: |
+              Your application's Client Secret.
+            type: string
+            required: true
+          refresh_token:
+            description: |
+              The refresh token to use.
+            type: string
+            required: true
+        example: |
+          {
+            "grant_type": "refresh_token",
+            "client_id": "3QBfya9tLgZ0uuTZ20KiYnz4DY4B9O-k",
+            "client_secret": "LveswyAl8MVrdASqR3JQt2n-cNzWDMezPwvLWKj3dGISYOVDgYeT-2Dj2-a_JShi",
+            "refresh_token": "YOUR_REFRESH_TOKEN"
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            type: AuthorizationInfo
+            example: |
+              {
+                "access_token": "eyJz93a...k4laUWw",
+                "token_type": "Bearer",
+                "expires_in": 86400
+              }
+
+/oauth/revoke:
+  post:
+    description: |
+      Since refersh tokens never expire, you need to have a way to invalidate them in case they are compromised or you no longer need them.
+      You can do use using this endpoint.
+    body:
+      application/json:
+        type: object
+        properties:
+          token:
+            description: |
+              The refresh token you want to revoke.
+            type: string
+            required: true
+          client_id:
+            description: |
+              Your application's Client ID. The client should match the one the refresh token was issued for.
+            type: string
+            required: true
+          client_secret:
+            description: |
+              Your application's Client Secret. Required for confidential clients.
+            type: string
+            required: true
+        example: |
+          {
+            "client_id": "3QBfya9tLgZ0uuTZ20KiYnz4DY4B9O-k",
+            "client_secret": "LveswyAl8MVrdASqR3JQt2n-cNzWDMezPwvLWKj3dGISYOVDgYeT-2Dj2-a_JShi",
+            "token": "YOUR_REFRESH_TOKEN"
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "refresh_token": "YOUR_REFRESH_TOKEN"
+              }
+
+/sign_up:
+  post:
+    description: |
+      Given a user's credentials this endpoint will create a new user using active authentication.
+    body:
+      application/json:
+        type: object
+        properties:
+          client_id:
+            description: |
+              The "client_id" of your client.
+            type: string
+            required: true
+          email:
+            description: |
+              The user's email address.
+            type: string
+            required: true
+          password:
+            description: |
+              The user's desired password.
+            type: string
+            required: true
+          user_metadata:
+            description: |
+              The user metadata to be associated with the user.
+              If set, the field must be an object containing no more than ten properties.
+              Property names can have a maximum of 100 characters,
+              and property values must be strings of no more than 500 characters.
+            type: object
+            required: true
+        example: |
+          {
+            "client_id": "YOUR_CLIENT_ID",
+            "email": "EMAIL",
+            "password": "PASSWORD",
+            "user_metadata": {}
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "uid": "58457fe6b27...",
+                "email_verified": false,
+                "email": "test.account@signup.com"
+              }
+
+/change_password:
+  post:
+    description: |
+      Given a user's email address, authorization server will change password.
+    body:
+      application/json:
+        type: object
+        properties:
+          client_id:
+            description: |
+              The "client_id" of your client.
+            type: string
+            required: true
+          email:
+            description: |
+              The user's email address.
+            type: string
+            required: true
+          password:
+            description: |
+              The new password.
+            type: string
+            required: true
+        example: |
+          {
+            "client_id": "YOUR_CLIENT_ID",
+            "email": "USER_EMAIL",
+            "password": "USER_PASSWORD"
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "uid": "58457fe6b27..."
+              }
+
+/user_info:
+  get:
+    description: |
+      Given the authorization server access token obtained during login,
+      this endpoint returns a user's profile.
+      This endpoint will work only if *openid* was granted as a scope for the *access_token*.
+    queryParameters:
+      access_token:
+        description: |
+          The authorization server *access_token* obtained during login.
+        type: string
+        required: true
+        minLength: 5
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "email_verified": false,
+                "email": "test.account@userinfo.com",
+                "clientID": "q2hnj2iu...",
+                "updated_at": "2016-12-05T15:15:40.545Z",
+                "name": "test.account@userinfo.com",
+                "picture": "https://s.gravatar.com/avatar/dummy.png",
+                "user_id": "auth0|58454...",
+                "nickname": "test.account",
+                "created_at": "2016-12-05T11:16:59.640Z",
+                "sub": "auth0|58454..."
+              }
