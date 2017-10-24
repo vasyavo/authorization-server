@@ -19,8 +19,6 @@ config.workingDirectory = path.join(__dirname, '../../');
 const host = process.env.HOST;
 
 config.port = parseInt(process.env.PORT, 10) || 3000;
-config.host = host || 'localhost';
-config.localhost = host || `https://${config.host}:${config.port}`;
 config.debug = process.env.DEBUG_DEV || false;
 
 /* Database configurations */

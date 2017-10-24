@@ -37,7 +37,7 @@ co(function * () {
     app.use(require('./utils/notFound'));
     app.use(require('./utils/errorHandler'));
 
-    app.listen(3000, () => {
+    app.listen(config.port, () => {
         logger.info(`Server started at port ${config.port} in ${config.env} environment:`, config);
     });
 });
