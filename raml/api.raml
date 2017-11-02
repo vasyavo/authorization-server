@@ -111,6 +111,26 @@ types:
                 "refresh_token": "YOUR_REFRESH_TOKEN"
               }
 
+/oauth/facebook:
+  get:
+    description: |
+      Use this endpoint to authenticate a user with a social provider. It will return a *302* redirect to the social provider Facebook.
+    responses:
+      302:
+        body:
+          example: "Social provider sign in form."
+
+
+/oauth/facebook/callback:
+  get:
+    description: |
+      Use this endpoint to accept response from social provider. It will return a *200*.
+    responses:
+      200:
+        body:
+          example: "Social provider sign in form."
+
+
 /oauth/refresh:
   post:
     description: |

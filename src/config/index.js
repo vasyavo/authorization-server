@@ -16,8 +16,6 @@ require('dotenv').config({
 
 config.workingDirectory = path.join(__dirname, '../../');
 
-const host = process.env.HOST;
-
 config.port = parseInt(process.env.PORT, 10) || 3000;
 config.debug = process.env.DEBUG_DEV || false;
 
@@ -31,6 +29,14 @@ config.webConcurrency = process.env.WEB_CONCURRENCY || 1;
 config.isMaster = cluster.isMaster;
 
 config.raml = path.join(config.workingDirectory, 'raml/api.raml');
+
+config.thirdParty = {
+    facebook: {
+        clientId: process.env.FACEBOOK_APP_ID,
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
+        callbackURL: process.env.FACEBOOK_CALLBACK_URL || 'http://localhost:3000/auth/facebook/callback',
+    },
+};
 
 // import this file at begin of server.js
 module.exports = config;
