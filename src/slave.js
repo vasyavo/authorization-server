@@ -31,8 +31,9 @@ co(function * () {
             mockService,
         } = yield* osprey();
 
-        app.use('/v1', middleware);
-        app.use('/v1/oauth/facebook', require('./social/facebook/router'));
+        // app.use('/v1', middleware);
+        app.use('/v1/user', require('./routes/user/router'));
+        app.use('/v1/oauth/facebook', require('./routes/social/facebook/router'));
         app.use('/v1', mockService);
     }
 
