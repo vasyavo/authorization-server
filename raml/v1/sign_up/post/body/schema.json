@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "The \"client_id\" of your client."
+    },
+    "email": {
+      "type": "string",
+      "description": "The user's email address."
+    },
+    "password": {
+      "type": "string",
+      "description": "The user's desired password."
+    },
+    "user_metadata": {
+      "type": "object",
+      "description": "The user metadata to be associated with the user. If set, the field must be an object containing no more than ten properties. Property names can have a maximum of 100 characters, and property values must be strings of no more than 500 characters."
+    }
+  },
+  "required": ["client_id", "email", "password", "user_metadata"]
+}
