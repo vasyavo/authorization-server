@@ -5,7 +5,7 @@ db.createCollection(contentType,
     {
         validator: {
             $and: [{
-                clientId: {
+                accessToken: {
                     $and: [{
                         $exists: true,
                     }, {
@@ -14,7 +14,7 @@ db.createCollection(contentType,
                     ],
                 },
             }, {
-                clientSecret: {
+                refreshToken: {
                     $and: [{
                         $exists: true,
                     }, {
@@ -23,11 +23,29 @@ db.createCollection(contentType,
                     ],
                 },
             }, {
-                name: {
+                expiresIn: {
+                    $and: [{
+                        $exists: true,
+                    }, {
+                        $type: 'number',
+                    },
+                    ],
+                },
+            }, {
+                scope: {
                     $and: [{
                         $exists: true,
                     }, {
                         $type: 'string',
+                    },
+                    ],
+                },
+            }, {
+                userId: {
+                    $and: [{
+                        $exists: true,
+                    }, {
+                        $type: 'objectId',
                     },
                     ],
                 },
@@ -41,12 +59,9 @@ db.createCollection(contentType,
 );
 
 db.collection(contentType).createIndex({
-        clientId    : 1,
-        clientSecret: 1,
-        name        : 1,
-    }, {
-        unique: true,
-    },
-);
+    userId: 1,
+}, {
+    unique: true,
+});
 
 module.exports = db.collection(contentType);

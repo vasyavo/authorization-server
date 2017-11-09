@@ -21,7 +21,7 @@ process.on('uncaughtException', (error) => {
 
 const app = express();
 
-co(function* () {
+co(function * () {
     app.use(addRequestId);
     app.use(compress());
 
@@ -41,8 +41,9 @@ co(function* () {
         } = yield* osprey();
 
         app.use(middleware);
-        app.use('/v1/sign_up', require('./handlers/user/signUp'));
-        app.use('/v1/oauth/facebook', require('./social/facebook/router'));
+        app.post('/v1/sign_up', require('./handlers/user/signUp'));
+        app.post('/v1/oauth/token', require('./handlers/user/signIn'));
+        app.use('/v1/oauth/facebook', require('./routes/social/facebook/router'));
         app.use(mockService);
     }
 

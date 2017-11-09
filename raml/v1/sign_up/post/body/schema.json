@@ -8,6 +8,7 @@
     },
     "email": {
       "type": "string",
+      "pattern":"^.+@.+\\..+$",
       "description": "The user's email address."
     },
     "password": {
