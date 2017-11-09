@@ -37,7 +37,7 @@ types:
         minLength: 6
         required: true
 
-/oauth/token:
+/v1/oauth/token:
   post:
     description: |
       This is the OAuth 2.0 grant that highly trusted apps utilize in order to access an API.
@@ -111,7 +111,7 @@ types:
                 "refresh_token": "YOUR_REFRESH_TOKEN"
               }
 
-/oauth/facebook:
+/v1/oauth/facebook:
   get:
     description: |
       Use this endpoint to authenticate a user with a social provider. It will return a *302* redirect to the social provider Facebook.
@@ -121,7 +121,7 @@ types:
           example: "Social provider sign in form."
 
 
-/oauth/facebook/callback:
+/v1/oauth/facebook/callback:
   get:
     description: |
       Use this endpoint to accept response from social provider. It will return a *200*.
@@ -131,7 +131,7 @@ types:
           example: "Social provider sign in form."
 
 
-/oauth/refresh:
+/v1/oauth/refresh:
   post:
     description: |
       Use this endpoint to refresh an access token, using the refresh token you got during authorization.
@@ -180,7 +180,7 @@ types:
                 "expires_in": 86400
               }
 
-/oauth/revoke:
+/v1/oauth/revoke:
   post:
     description: |
       Since refersh tokens never expire, you need to have a way to invalidate them in case they are compromised or you no longer need them.
@@ -219,56 +219,21 @@ types:
                 "refresh_token": "YOUR_REFRESH_TOKEN"
               }
 
-/sign_up:
+/v1/sign_up:
   post:
     description: |
       Given a user's credentials this endpoint will create a new user using active authentication.
     body:
       application/json:
-        type: object
-        properties:
-          client_id:
-            description: |
-              The "client_id" of your client.
-            type: string
-            required: true
-          email:
-            description: |
-              The user's email address.
-            type: string
-            required: true
-          password:
-            description: |
-              The user's desired password.
-            type: string
-            required: true
-          user_metadata:
-            description: |
-              The user metadata to be associated with the user.
-              If set, the field must be an object containing no more than ten properties.
-              Property names can have a maximum of 100 characters,
-              and property values must be strings of no more than 500 characters.
-            type: object
-            required: true
-        example: |
-          {
-            "client_id": "YOUR_CLIENT_ID",
-            "email": "EMAIL",
-            "password": "PASSWORD",
-            "user_metadata": {}
-          }
+        schema: !include v1/sign_up/post/body/schema.json
+        example: !include v1/sign_up/post/body/example.json
     responses:
       200:
         body:
           application/json:
-            example: |
-              {
-                "uid": "58457fe6b27...",
-                "email_verified": false,
-                "email": "test.account@signup.com"
-              }
+            example: !include v1/sign_up/post/responses/200/example.json
 
-/change_password:
+/v1/change_password:
   post:
     description: |
       Given a user's email address, authorization server will change password.
@@ -306,7 +271,7 @@ types:
                 "uid": "58457fe6b27..."
               }
 
-/user_info:
+/v1/user_info:
   get:
     description: |
       Given the authorization server access token obtained during login,
