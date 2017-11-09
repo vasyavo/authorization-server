@@ -1,9 +1,7 @@
 const Mongoose = require('mongoose');
-const Bluebird = require('bluebird');
 const config = require('./../config');
 const logger = require('./logger');
 
-Mongoose.Promise = Bluebird;
 const dbUri = config.mongodbUri;
 
 Mongoose.connect(dbUri);

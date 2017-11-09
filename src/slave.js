@@ -4,10 +4,12 @@ const bodyParser = require('body-parser');
 const compress = require('compression');
 const co = require('co');
 const addRequestId = require('express-request-id')();
+const passport = require('passport');
 
 const config = require('./config');
 const logger = require('./utils/logger');
 const osprey = require('./utils/osprey');
+require('./utils/mongo');
 
 process.on('unhandledRejection', (reason, p) => {
     logger.error(p, reason);
@@ -19,11 +21,18 @@ process.on('uncaughtException', (error) => {
 
 const app = express();
 
-co(function * () {
+co(function* () {
     app.use(addRequestId);
     app.use(compress());
+
+    passport.serializeUser(function (user, done) {
+        done(null, user);
+    });
+
+    app.use(passport.initialize());
+
     app.disable('x-powered-by');
-    app.use(bodyParser.json({ extended: true }));
+    app.use(bodyParser.json({extended: true}));
 
     {
         const {
@@ -31,8 +40,8 @@ co(function * () {
             mockService,
         } = yield* osprey();
 
-        // app.use('/v1', middleware);
-        app.use('/v1/user', require('./routes/user/router'));
+        app.use('/v1', middleware);
+        app.use('/v1/sign_up', require('./handlers/user/signUp'));
         app.use('/v1/oauth/facebook', require('./routes/social/facebook/router'));
         app.use('/v1', mockService);
     }
