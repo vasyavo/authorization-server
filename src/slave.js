@@ -21,7 +21,7 @@ process.on('uncaughtException', (error) => {
 
 const app = express();
 
-co(function * () {
+co(function* () {
     app.use(addRequestId);
     app.use(compress());
 
