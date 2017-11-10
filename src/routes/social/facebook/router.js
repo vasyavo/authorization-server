@@ -8,7 +8,7 @@ const UserModel = require('../../../models/user');
 passport.use(new FacebookStrategy({
     clientID     : config.clientId,
     clientSecret : config.clientSecret,
-    callbackURL  : 'https://bhqeqqwtxu.localtunnel.me/v1/oauth/facebook/callback',
+    callbackURL  : config.callbackURL,
     profileFields: ['id', 'email', 'gender', 'name'],
     enableProof  : true,
 }, (accessToken, refreshToken, profile, cb) => {
