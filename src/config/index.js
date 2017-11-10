@@ -27,14 +27,17 @@ config.mongodbUri = process.env.MONGODB_URI;
 
 config.webConcurrency = process.env.WEB_CONCURRENCY || 1;
 config.isMaster = cluster.isMaster;
+config.security = {
+    expiresIn: process.env.TOKEN_EXPIRES_IN || 8640,
+};
 
 config.raml = path.join(config.workingDirectory, 'raml/api.raml');
 
 config.thirdParty = {
     facebook: {
-        clientId: process.env.FACEBOOK_APP_ID,
+        clientId    : process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: process.env.FACEBOOK_CALLBACK_URL || 'http://localhost:3000/v1/outh/facebook/callback',
+        callbackURL : process.env.FACEBOOK_CALLBACK_URL || 'http://localhost:3000/v1/outh/facebook/callback',
     },
 };
 

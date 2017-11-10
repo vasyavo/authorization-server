@@ -4,7 +4,7 @@ const generateError = require('../../utils/errorGenerator');
 const {encryptPassword} = require('../../utils/encryptionHelper');
 
 async function signUp(req, res, next) {
-    const {client_id: clientId, email, password, user_metadata: meta} = req.body;
+    const {client_id: clientId, email, password, user_metadata: meta,} = req.body;
 
     try {
         const client = await ClientModel.findOne({clientId});

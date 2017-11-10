@@ -1,35 +1,30 @@
-const UserModel = require('../../models/user');
 const ClientModel = require('../../models/client');
 const TokenModel = require('../../models/token');
 const generateError = require('../../utils/errorGenerator');
-const {encryptPassword, genAccessToken} = require('../../utils/encryptionHelper');
+const {genAccessToken} = require('../../utils/encryptionHelper');
 const {security: {expiresIn: timeToAlive}} = require('../../config');
 
-async function signIn(req, res, next) {
-    const {client_id: clientId, client_secret: clientSecret, password, username: email, scope,} = req.body;
-    let userId;
+async function refreshToken(req, res, next) {
+    const {client_id: clientId, client_secret: clientSecret, refresh_token: refreshToken,} = req.body;
 
     try {
         const client = await ClientModel.findOne({clientId, clientSecret});
 
         if (!client) {
-            return next(generateError('You can\'t sign in through your application'));
+            return next(generateError('You can\'t refresh token through your application'));
         }
     } catch (e) {
         return next(e);
     }
 
     try {
-        const user = await UserModel.findOne({
-            email,
-            password: encryptPassword(password),
+        const token = await TokenModel.findOne({
+            refreshToken,
         });
 
-        if (!user) {
-            return next(generateError('User with such credentials doesn\'t exist'));
+        if (!token) {
+            return next(generateError('Token with such refresh token doesn\'t exist'));
         }
-
-        userId = user._id;
     } catch (e) {
         return next(e);
     }
@@ -39,17 +34,13 @@ async function signIn(req, res, next) {
         const {hash: refreshToken} = genAccessToken(timeToAlive);
 
         await TokenModel.findOneAndUpdate({
-            userId,
+            refreshToken,
         }, {
             $set: {
-                scope,
                 accessToken,
                 refreshToken,
                 expiresIn,
-                userId,
             }
-        }, {
-            upsert: true,
         });
 
         res.status(200).send({
@@ -62,4 +53,4 @@ async function signIn(req, res, next) {
     }
 }
 
-module.exports = signIn;
+module.exports = refreshToken;
