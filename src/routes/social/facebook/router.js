@@ -20,7 +20,7 @@ passport.use(new FacebookStrategy({
             level  : 'error',
             message: 'Email field is required for Facebook account',
         });
-        return cb(new Error('Email is required filed, so you must to set it up in your Facebook account'));
+        return cb(new Error('Email is required field, so you must to set it up in your Facebook account'));
     }
 
     UserModel.findOneAndUpdate({email}, {

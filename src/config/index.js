@@ -39,6 +39,11 @@ config.thirdParty = {
         clientSecret: process.env.FACEBOOK_APP_SECRET,
         callbackURL : process.env.FACEBOOK_CALLBACK_URL,
     },
+    linkedIn: {
+        clientId    : process.env.LINKED_IN_APP_ID,
+        clientSecret: process.env.LINKED_IN_APP_SECRET,
+        callbackURL : process.env.LINKED_IN_CALLBACK_URL,
+    },
 };
 
 // import this file at begin of server.js
