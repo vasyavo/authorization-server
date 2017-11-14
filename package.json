@@ -6,11 +6,15 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "cross-env NODE_ENV=development node src/server.js",
+    "postinstall": "npm run ramldoc",
     "tunnel": "cross-env lt --port 3000",
     "test": "NODE_ENV=development mocha --require co-mocha --ui bdd 'src/**/*.spec.js'",
     "coverage": "nyc npm run test",
     "commit": "git cz",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "ramldoc": "raml2html --theme raml2html-default-theme raml/api.raml > docs/api.html",
+    "migrations:up": "chmod +x migrations.sh && ./migrations.sh up",
+    "migrations:down": "chmod +x migrations.sh && ./migrations.sh down"
   },
   "repository": {
     "type": "git",
@@ -47,6 +51,7 @@
     "express-session": "1.15.6",
     "localtunnel": "^1.8.3",
     "mongodb": "^2.2.33",
+    "mongodb-migrate": "^2.0.2",
     "nconf": "^0.8.5",
     "osprey": "^0.4.1",
     "osprey-method-handler": "^0.11.1",
@@ -55,6 +60,8 @@
     "passport-facebook": "^2.1.1",
     "passport-linkedin-oauth2": "^1.5.0",
     "raml-1-parser": "^1.1.35",
+    "raml2html": "^6.4.2",
+    "raml2html-default-theme": "^2.5.0",
     "throng": "^4.0.0",
     "uuid": "^3.1.0",
     "winston": "^2.4.0"
