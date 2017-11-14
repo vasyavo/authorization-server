@@ -1,9 +1,12 @@
-const UserCollection = require('../../models/user');
-const ClientCollection = require('../../models/client');
+const UserConnection = require('../../models/user');
+const ClientConnection = require('../../models/client');
 const generateError = require('../../utils/errorGenerator');
 const {encryptPassword} = require('../../utils/encryptionHelper');
 
 async function signUp(req, res, next) {
+    const UserCollection = await UserConnection;
+    const ClientCollection = await ClientConnection;
+
     const {client_id: clientId, email, password, user_metadata: meta,} = req.body;
 
     try {

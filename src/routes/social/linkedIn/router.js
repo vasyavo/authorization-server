@@ -1,40 +1,45 @@
+const co = require('co');
 const passport = require('passport');
-const {Strategy: LinkedInStrategy} = require('passport-linkedin-oauth2');
+const { Strategy: LinkedInStrategy } = require('passport-linkedin-oauth2');
 const express = require('express');
 const config = require('../../../config/index').thirdParty.linkedIn;
 const logger = require('../../../utils/logger');
-const UserCollection = require('../../../models/user');
+const UserConnection = require('../../../models/user');
 
 passport.use(new LinkedInStrategy({
-    clientID    : config.clientId,
+    clientID: config.clientId,
     clientSecret: config.clientSecret,
-    callbackURL : config.callbackURL,
-    scope       : ['r_emailaddress', 'r_basicprofile'],
+    callbackURL: config.callbackURL,
+    scope: ['r_emailaddress', 'r_basicprofile'],
 }, (accessToken, refreshToken, profile, cb) => {
-    const data = (profile && profile._json) || {};
-    const {emailAddress : email, firstName, lastName, id} = data;
+    co(function * () {
+        const UserCollection = yield UserConnection;
 
-    if (!data.email) {
-        logger.log({
-            level  : 'error',
-            message: 'Email field is required for LinkedIn account',
-        });
-        return cb(new Error('Email is required field, so you must to set it up in your LinkedIn account'));
-    }
+        const data = (profile && profile._json) || {};
+        const { emailAddress: email, firstName, lastName, id } = data;
 
-    UserCollection.findOneAndUpdate({email}, {
-        $set: {
-            email,
-            'meta.firstName' : firstName,
-            'meta.lastName'  : lastName,
-            'social.linkedId': id,
-        }
-    }, {upsert: true}, (err, result) => {
-        if (err) {
-            return cb(err);
+        if (!data.email) {
+            logger.log({
+                level: 'error',
+                message: 'Email field is required for LinkedIn account',
+            });
+            return cb(new Error('Email is required field, so you must to set it up in your LinkedIn account'));
         }
 
-        cb(null, result);
+        try {
+            const result = UserCollection.findOneAndUpdate({ email }, {
+                $set: {
+                    email,
+                    'meta.firstName': firstName,
+                    'meta.lastName': lastName,
+                    'social.linkedId': id,
+                },
+            }, { upsert: true });
+
+            cb(null, result);
+        } catch (error) {
+            cb(error);
+        }
     });
 }));
 
@@ -44,7 +49,7 @@ router.get('/', passport.authenticate('linkedin', {
     state: 'SOME STATE',
 }));
 
-router.get('/callback', passport.authenticate('linkedin', {failureRedirect: '/v1/oauth/linkedIn/failureCallback'}),
+router.get('/callback', passport.authenticate('linkedin', { failureRedirect: '/v1/oauth/linkedIn/failureCallback' }),
     (req, res) => {
         console.log();
         res.redirect('/');

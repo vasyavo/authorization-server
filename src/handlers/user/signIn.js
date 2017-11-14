@@ -1,11 +1,15 @@
-const UserCollection = require('../../models/user');
-const ClientCollection = require('../../models/client');
-const TokenCollection = require('../../models/token');
+const UserConnection = require('../../models/user');
+const ClientConnection = require('../../models/client');
+const TokenConnection = require('../../models/token');
 const generateError = require('../../utils/errorGenerator');
 const {encryptPassword, genAccessToken} = require('../../utils/encryptionHelper');
 const {security: {expiresIn: timeToAlive}} = require('../../config');
 
 async function signIn(req, res, next) {
+    const UserCollection = await UserConnection;
+    const ClientCollection = await ClientConnection;
+    const TokenCollection = await TokenConnection;
+
     const {client_id: clientId, client_secret: clientSecret, password, username: email, scope,} = req.body;
     let userId;
 

@@ -1,9 +1,10 @@
+const co = require('co');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
 const express = require('express');
 const config = require('../../../config/index').thirdParty.facebook;
 const logger = require('../../../utils/logger');
-const UserCollection = require('../../../models/user');
+const UserConnection = require('../../../models/user');
 
 passport.use(new FacebookStrategy({
     clientID: config.clientId,
@@ -12,37 +13,39 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'email', 'gender', 'name'],
     enableProof: true,
 }, (accessToken, refreshToken, profile, cb) => {
-    const data = (profile && profile._json) || {};
-    const {
-        email, first_name, last_name, gender, id,
-    } = data;
+    co(function * () {
+        const UserCollection = yield UserConnection;
 
-    if (!data.email) {
-        logger.log({
-            level: 'error',
-            message: 'Email field is required for Facebook account',
-        });
-        return cb(new Error('Email is required field, so you must to set it up in your Facebook account'));
-    }
+        const data = (profile && profile._json) || {};
+        const {
+            email, first_name, last_name, gender, id,
+        } = data;
 
-    UserCollection.findOneAndUpdate({
-        email,
-    }, {
-        $set: {
-            email,
-            'meta.firstName': first_name,
-            'meta.lastName': last_name,
-            'meta.gender': gender,
-            'social.facebookId': id,
-        },
-    }, {
-        upsert: true,
-    }, (err, result) => {
-        if (err) {
-            return cb(err);
+        if (!data.email) {
+            logger.log({
+                level: 'error',
+                message: 'Email field is required for Facebook account',
+            });
+            return cb(new Error('Email is required field, so you must to set it up in your Facebook account'));
         }
 
-        cb(null, result);
+        try {
+            const result = yield UserCollection.findOneAndUpdate({
+                email,
+            }, {
+                $set: {
+                    email,
+                    'meta.firstName': first_name,
+                    'meta.lastName': last_name,
+                    'meta.gender': gender,
+                    'social.facebookId': id,
+                },
+            }, { upsert: true });
+
+            cb(null, result);
+        } catch (error) {
+            cb(error);
+        }
     });
 }));
 
