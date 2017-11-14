@@ -3,7 +3,7 @@ const FacebookStrategy = require('passport-facebook');
 const express = require('express');
 const config = require('../../../config/index').thirdParty.facebook;
 const logger = require('../../../utils/logger');
-const UserModel = require('../../../models/user');
+const UserCollection = require('../../../models/user');
 
 passport.use(new FacebookStrategy({
     clientID: config.clientId,
@@ -25,7 +25,7 @@ passport.use(new FacebookStrategy({
         return cb(new Error('Email is required field, so you must to set it up in your Facebook account'));
     }
 
-    UserModel.findOneAndUpdate({
+    UserCollection.findOneAndUpdate({
         email,
     }, {
         $set: {

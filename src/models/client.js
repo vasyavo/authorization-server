@@ -1,8 +1,11 @@
-const contentType = require('../../constants/contentType').CLIENT;
-const db = require('../../utils/mongo');
+const co = require('co');
+const collectionName = require('../constants/contentType').CLIENT;
+const connection = require('../utils/connection');
 
-db.createCollection(contentType,
-    {
+module.exports = co(function * () {
+    const db = yield connection;
+
+    const collection = yield db.createCollection(collectionName, {
         validator: {
             $and: [{
                 clientId: {
@@ -10,8 +13,7 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'string',
-                    },
-                    ],
+                    }],
                 },
             }, {
                 clientSecret: {
@@ -19,8 +21,7 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'string',
-                    },
-                    ],
+                    }],
                 },
             }, {
                 name: {
@@ -28,25 +29,23 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'string',
-                    },
-                    ],
+                    }],
                 },
             },
             ],
         },
 
-        validationLevel : 'strict',
+        validationLevel: 'strict',
         validationAction: 'error',
-    }
-);
+    });
 
-db.collection(contentType).createIndex({
-        clientId    : 1,
+    yield collection.createIndex({
+        clientId: 1,
         clientSecret: 1,
-        name        : 1,
+        name: 1,
     }, {
         unique: true,
-    },
-);
+    });
 
-module.exports = db.collection(contentType);
+    return collection;
+});

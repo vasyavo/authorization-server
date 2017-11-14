@@ -1,8 +1,11 @@
-const contentType = require('../../constants/contentType').TOKEN;
-const db = require('../../utils/mongo');
+const co = require('co');
+const collectionName = require('../constants/contentType').TOKEN;
+const connection = require('../utils/connection');
 
-db.createCollection(contentType,
-    {
+module.exports = co(function * () {
+    const db = yield connection;
+
+    const collection = yield db.createCollection(collectionName, {
         validator: {
             $and: [{
                 accessToken: {
@@ -10,8 +13,7 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'string',
-                    },
-                    ],
+                    }],
                 },
             }, {
                 refreshToken: {
@@ -19,8 +21,7 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'string',
-                    },
-                    ],
+                    }],
                 },
             }, {
                 expiresIn: {
@@ -28,8 +29,7 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'number',
-                    },
-                    ],
+                    }],
                 },
             }, {
                 scope: {
@@ -37,8 +37,7 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'string',
-                    },
-                    ],
+                    }],
                 },
             }, {
                 userId: {
@@ -46,22 +45,21 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'objectId',
-                    },
-                    ],
+                    }],
                 },
             },
             ],
         },
 
-        validationLevel : 'strict',
+        validationLevel: 'strict',
         validationAction: 'error',
-    }
-);
+    });
 
-db.collection(contentType).createIndex({
-    userId: 1,
-}, {
-    unique: true,
+    yield collection.createIndex({
+        userId: 1,
+    }, {
+        unique: true,
+    });
+
+    return collection;
 });
-
-module.exports = db.collection(contentType);

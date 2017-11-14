@@ -1,5 +1,5 @@
-const ClientModel = require('../../models/client');
-const TokenModel = require('../../models/token');
+const ClientCollection = require('../../models/client');
+const TokenCollection = require('../../models/token');
 const generateError = require('../../utils/errorGenerator');
 const {genAccessToken} = require('../../utils/encryptionHelper');
 const {security: {expiresIn: timeToAlive}} = require('../../config');
@@ -8,7 +8,7 @@ async function refreshToken(req, res, next) {
     const {client_id: clientId, client_secret: clientSecret, refresh_token: refreshToken,} = req.body;
 
     try {
-        const client = await ClientModel.findOne({clientId, clientSecret});
+        const client = await ClientCollection.findOne({clientId, clientSecret});
 
         if (!client) {
             return next(generateError('You can\'t refresh token through your application'));
@@ -18,7 +18,7 @@ async function refreshToken(req, res, next) {
     }
 
     try {
-        const token = await TokenModel.findOne({
+        const token = await TokenCollection.findOne({
             refreshToken,
         });
 
@@ -33,7 +33,7 @@ async function refreshToken(req, res, next) {
         const {hash: accessToken, expiresIn} = genAccessToken(timeToAlive);
         const {hash: refreshToken} = genAccessToken(timeToAlive);
 
-        await TokenModel.findOneAndUpdate({
+        await TokenCollection.findOneAndUpdate({
             refreshToken,
         }, {
             $set: {

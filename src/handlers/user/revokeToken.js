@@ -1,12 +1,12 @@
-const ClientModel = require('../../models/client');
-const TokenModel = require('../../models/token');
+const ClientCollection = require('../../models/client');
+const TokenCollection = require('../../models/token');
 const generateError = require('../../utils/errorGenerator');
 
 async function refreshToken(req, res, next) {
     const {client_id: clientId, client_secret: clientSecret, token: refreshToken,} = req.body;
 
     try {
-        const client = await ClientModel.findOne({clientId, clientSecret});
+        const client = await ClientCollection.findOne({clientId, clientSecret});
 
         if (!client) {
             return next(generateError('You can\'t revoke tokens through your application'));
@@ -16,7 +16,7 @@ async function refreshToken(req, res, next) {
     }
 
     try {
-        const token = await TokenModel.findOne({
+        const token = await TokenCollection.findOne({
             refreshToken,
         });
 
@@ -29,7 +29,7 @@ async function refreshToken(req, res, next) {
     }
 
     try {
-        await TokenModel.findOneAndDelete({
+        await TokenCollection.findOneAndDelete({
             refreshToken,
         });
 

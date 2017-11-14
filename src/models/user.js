@@ -1,8 +1,11 @@
-const contentType = require('../../constants/contentType').USER;
-const db = require('../../utils/mongo');
+const co = require('co');
+const collectionName = require('../constants/contentType').USER;
+const connection = require('../utils/connection');
 
-db.createCollection(contentType,
-    {
+module.exports = co(function * () {
+    const db = yield connection;
+
+    const collection = yield db.createCollection(collectionName, {
         validator: {
             $and: [{
                 email: {
@@ -10,8 +13,7 @@ db.createCollection(contentType,
                         $exists: true,
                     }, {
                         $type: 'string',
-                    },
-                    ],
+                    }],
                 },
             }, {
                 password: {
@@ -19,8 +21,7 @@ db.createCollection(contentType,
                         $type: 'string',
                     }, {
                         $exists: false,
-                    },
-                    ],
+                    }],
                 },
             }, {
                 'meta.gender': {
@@ -28,8 +29,7 @@ db.createCollection(contentType,
                         $in: ['male', 'female'],
                     }, {
                         $exists: false,
-                    },
-                    ],
+                    }],
                 },
             }, {
                 'meta.firstName': {
@@ -37,8 +37,7 @@ db.createCollection(contentType,
                         $type: 'string',
                     }, {
                         $exists: false,
-                    },
-                    ],
+                    }],
                 },
             }, {
                 'meta.lastName': {
@@ -46,8 +45,7 @@ db.createCollection(contentType,
                         $type: 'string',
                     }, {
                         $exists: false,
-                    },
-                    ],
+                    }],
                 },
             }, {
                 'social.facebookId': {
@@ -55,8 +53,7 @@ db.createCollection(contentType,
                         $type: 'string',
                     }, {
                         $exists: false,
-                    },
-                    ],
+                    }],
                 },
             }, {
                 'meta.linkedInId': {
@@ -64,23 +61,21 @@ db.createCollection(contentType,
                         $type: 'string',
                     }, {
                         $exists: false,
-                    },
-                    ],
+                    }],
                 },
             },
             ],
         },
 
-        validationLevel : 'strict',
+        validationLevel: 'strict',
         validationAction: 'error',
-    }
-);
+    });
 
-db.collection(contentType).createIndex({
+    yield collection.createIndex({
         email: 1,
     }, {
         unique: true,
-    },
-);
+    });
 
-module.exports = db.collection(contentType);
+    return collection;
+});

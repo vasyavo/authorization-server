@@ -1,5 +1,5 @@
-const UserModel = require('../../models/user');
-const ClientModel = require('../../models/client');
+const UserCollection = require('../../models/user');
+const ClientCollection = require('../../models/client');
 const generateError = require('../../utils/errorGenerator');
 const {encryptPassword} = require('../../utils/encryptionHelper');
 
@@ -7,7 +7,7 @@ async function signUp(req, res, next) {
     const {client_id: clientId, email, password, user_metadata: meta,} = req.body;
 
     try {
-        const client = await ClientModel.findOne({clientId});
+        const client = await ClientCollection.findOne({clientId});
 
         if (!client) {
             return next(generateError('You can\'t sign up through your application'));
@@ -17,7 +17,7 @@ async function signUp(req, res, next) {
     }
 
     try {
-        const user = await UserModel.findOne({email});
+        const user = await UserCollection.findOne({email});
 
         if (user) {
             return next(generateError('User with such credentials already exists'));
@@ -27,7 +27,7 @@ async function signUp(req, res, next) {
     }
 
     try {
-        const newUser = await UserModel.insertOne({
+        const newUser = await UserCollection.insertOne({
             email,
             password: encryptPassword(password),
             meta,

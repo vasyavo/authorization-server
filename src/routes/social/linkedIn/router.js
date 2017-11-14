@@ -3,7 +3,7 @@ const {Strategy: LinkedInStrategy} = require('passport-linkedin-oauth2');
 const express = require('express');
 const config = require('../../../config/index').thirdParty.linkedIn;
 const logger = require('../../../utils/logger');
-const UserModel = require('../../../models/user');
+const UserCollection = require('../../../models/user');
 
 passport.use(new LinkedInStrategy({
     clientID    : config.clientId,
@@ -22,7 +22,7 @@ passport.use(new LinkedInStrategy({
         return cb(new Error('Email is required field, so you must to set it up in your LinkedIn account'));
     }
 
-    UserModel.findOneAndUpdate({email}, {
+    UserCollection.findOneAndUpdate({email}, {
         $set: {
             email,
             'meta.firstName' : firstName,

@@ -1,6 +1,6 @@
-const UserModel = require('../../models/user');
-const ClientModel = require('../../models/client');
-const TokenModel = require('../../models/token');
+const UserCollection = require('../../models/user');
+const ClientCollection = require('../../models/client');
+const TokenCollection = require('../../models/token');
 const generateError = require('../../utils/errorGenerator');
 const {encryptPassword, genAccessToken} = require('../../utils/encryptionHelper');
 const {security: {expiresIn: timeToAlive}} = require('../../config');
@@ -10,7 +10,7 @@ async function signIn(req, res, next) {
     let userId;
 
     try {
-        const client = await ClientModel.findOne({clientId, clientSecret});
+        const client = await ClientCollection.findOne({clientId, clientSecret});
 
         if (!client) {
             return next(generateError('You can\'t sign in through your application'));
@@ -20,7 +20,7 @@ async function signIn(req, res, next) {
     }
 
     try {
-        const user = await UserModel.findOne({
+        const user = await UserCollection.findOne({
             email,
             password: encryptPassword(password),
         });
@@ -38,7 +38,7 @@ async function signIn(req, res, next) {
         const {hash: accessToken, expiresIn} = genAccessToken(timeToAlive);
         const {hash: refreshToken} = genAccessToken(timeToAlive);
 
-        await TokenModel.findOneAndUpdate({
+        await TokenCollection.findOneAndUpdate({
             userId,
         }, {
             $set: {

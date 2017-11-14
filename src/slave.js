@@ -8,7 +8,6 @@ const passport = require('passport');
 const config = require('./config');
 const logger = require('./utils/logger');
 const osprey = require('./utils/osprey');
-require('./utils/mongo');
 
 process.on('unhandledRejection', (reason, p) => {
     logger.error(p, reason);
@@ -20,7 +19,7 @@ process.on('uncaughtException', (error) => {
 
 const app = express();
 
-co(function* () {
+co(function * () {
     app.use(addRequestId);
     app.use(compress());
 
