@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "properties": {
+    "grant_type": {
+      "type": "string",
+      "description": "Denotes the flow you are using. To pass authorization use \"access_token\".",
+      "enum": ["access_token"]
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Your application's Client ID."
+    },
+    "client_secret": {
+      "type": "string",
+      "description": "Your application's Client Secret."
+    },
+    "access_token": {
+      "type": "string",
+      "description": "Resource Owner's identifier."
+    },
+    "scope": {
+      "type": "array",
+      "description": "String value of the different scopes the client is asking for. Multiple scopes are separated with whitespace.",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["grant_type", "client_id", "client_secret", "access_token", "scope"]
+}

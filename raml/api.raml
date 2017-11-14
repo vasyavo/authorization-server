@@ -48,68 +48,36 @@ types:
       For client side applications and mobile apps we recommend using web flows instead.
     body:
       application/json:
-        type: object
-        properties:
-          grant_type:
-            description: |
-              Denotes the flow you are using. For *Resource Owner Password* use "password".
-            type: string
-            enum: ["password"]
-            default: "password"
-            required: true
-          client_id:
-            description: |
-              Your application's Client ID.
-            type: string
-            required: true
-          client_secret:
-            description: |
-              Your application's Client Secret.
-            type: string
-            required: true
-          audience:
-            description: |
-              The unique identifier of the target API you want to access.
-            type: string
-            required: false
-          username:
-            description: |
-              Resource Owner's identifier.
-            type: string
-            required: true
-          password:
-            description: |
-              Resource Owner's secret.
-            type: string
-            required: true
-          scope:
-            description: |
-              String value of the different scopes the client is asking for.
-              Multiple scopes are separated with whitespace.
-            type: string
-            required: false
-        example: |
-          {
-            "grant_type": "password",
-            "username": "USERNAME",
-            "password": "PASSWORD",
-            "audience": "API_IDENTIFIER",
-            "scope": "SCOPE",
-            "client_id": "3QBfya9tLgZ0uuTZ20KiYnz4DY4B9O-k",
-            "client_secret": "LveswyAl8MVrdASqR3JQt2n-cNzWDMezPwvLWKj3dGISYOVDgYeT-2Dj2-a_JShi"
-          }
+        schema: !include v1/oauth/token/post/body/schema.json
+        example: !include v1/oauth/token/post/body/example.json
     responses:
       200:
         body:
-          application/json:
-            type: AuthorizationInfo
-            example: |
-              {
-                "access_token": "eyJz93a...k4laUWw",
-                "token_type": "Bearer",
-                "expires_in": 86400,
-                "refresh_token": "YOUR_REFRESH_TOKEN"
-              }
+          schema: !include v1/oauth/token/post/responses/200/schema.json
+          example: !include v1/oauth/token/post/responses/200/example.json
+      401:
+        body:
+          example: !include v1/oauth/token/post/responses/401/example.json
+
+/v1/oauth/access_token:
+  post:
+    description: |
+      This is the OAuth 2.0 grant that highly trusted apps utilize in order to access an API.
+      In this flow the user-agent should provide access token.
+      This information is sent to the backend and from there to authorization server.
+      It is therefore imperative that the client is absolutely trusted with this information.
+    body:
+      application/json:
+        schema: !include v1/oauth/access_token/post/body/schema.json
+        example: !include v1/oauth/access_token/post/body/example.json
+    responses:
+      200:
+        body:
+          schema: !include v1/oauth/access_token/post/responses/200/schema.json
+          example: !include v1/oauth/access_token/post/responses/200/example.json
+      401:
+        body:
+          example: !include v1/oauth/access_token/post/responses/401/example.json
 
 /v1/oauth/facebook:
   get:

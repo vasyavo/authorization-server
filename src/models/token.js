@@ -36,7 +36,7 @@ module.exports = co(function * () {
                     $and: [{
                         $exists: true,
                     }, {
-                        $type: 'string',
+                        $type: 'array',
                     }],
                 },
             }, {

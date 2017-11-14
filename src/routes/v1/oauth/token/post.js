@@ -1,16 +1,26 @@
-const UserConnection = require('../../models/user');
-const ClientConnection = require('../../models/client');
-const TokenConnection = require('../../models/token');
-const generateError = require('../../utils/errorGenerator');
-const {encryptPassword, genAccessToken} = require('../../utils/encryptionHelper');
-const {security: {expiresIn: timeToAlive}} = require('../../config');
+const UserConnection = require('../../../../models/user');
+const ClientConnection = require('../../../../models/client');
+const TokenConnection = require('../../../../models/token');
+const generateError = require('../../../../utils/errorGenerator');
+const {
+    encryptPassword,
+    genAccessToken,
+} = require('../../../../utils/encryptionHelper');
+const ttl = require('../../../../config').security.expiresIn;
 
 async function signIn(req, res, next) {
     const UserCollection = await UserConnection;
     const ClientCollection = await ClientConnection;
     const TokenCollection = await TokenConnection;
 
-    const {client_id: clientId, client_secret: clientSecret, password, username: email, scope,} = req.body;
+    const {
+        client_id: clientId,
+        client_secret: clientSecret,
+        password,
+        username: email,
+        scope,
+    } = req.body;
+
     let userId;
 
     try {
@@ -19,8 +29,8 @@ async function signIn(req, res, next) {
         if (!client) {
             return next(generateError('You can\'t sign in through your application'));
         }
-    } catch (e) {
-        return next(e);
+    } catch (error) {
+        return next(error);
     }
 
     try {
@@ -34,13 +44,18 @@ async function signIn(req, res, next) {
         }
 
         userId = user._id;
-    } catch (e) {
-        return next(e);
+    } catch (error) {
+        return next(error);
     }
 
     try {
-        const {hash: accessToken, expiresIn} = genAccessToken(timeToAlive);
-        const {hash: refreshToken} = genAccessToken(timeToAlive);
+        const {
+            hash: accessToken,
+            expiresIn,
+        } = genAccessToken(ttl);
+        const {
+            hash: refreshToken,
+        } = genAccessToken(ttl);
 
         await TokenCollection.findOneAndUpdate({
             userId,
@@ -61,8 +76,8 @@ async function signIn(req, res, next) {
             refresh_token: refreshToken,
             expires_in   : expiresIn,
         });
-    } catch (e) {
-        return next(e);
+    } catch (error) {
+        return next(error);
     }
 }
 

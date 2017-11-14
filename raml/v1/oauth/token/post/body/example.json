@@ -1,0 +1,10 @@
+{
+  "grant_type": "password",
+  "client_id": "CLIENT_ID",
+  "client_secret": "CLIENT_SECRET",
+  "username": "RESOURCE_OWNER_IDENTIFIER",
+  "password": "RESOURCE_OWNER_SECRET",
+  "scope": [
+    "module:read"
+  ]
+}

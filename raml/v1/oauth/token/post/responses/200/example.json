@@ -1,0 +1,8 @@
+{
+  "access_token": "ACCESS_TOKEN",
+  "expires_in": "8600",
+  "refresh_token": "REFRESH_TOKEN",
+  "scope": [
+    "module:read"
+  ]
+}

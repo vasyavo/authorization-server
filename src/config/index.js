@@ -32,17 +32,18 @@ config.security = {
 };
 
 config.raml = path.join(config.workingDirectory, 'raml/api.raml');
+config.ramlDoc = path.join(config.workingDirectory, 'docs/api.html');
 
 config.thirdParty = {
     facebook: {
-        clientId    : process.env.FACEBOOK_APP_ID,
+        clientId: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL : process.env.FACEBOOK_CALLBACK_URL,
+        callbackURL: process.env.FACEBOOK_CALLBACK_URL,
     },
     linkedIn: {
-        clientId    : process.env.LINKED_IN_APP_ID,
+        clientId: process.env.LINKED_IN_APP_ID,
         clientSecret: process.env.LINKED_IN_APP_SECRET,
-        callbackURL : process.env.LINKED_IN_CALLBACK_URL,
+        callbackURL: process.env.LINKED_IN_CALLBACK_URL,
     },
 };
 
