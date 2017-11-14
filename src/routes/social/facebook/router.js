@@ -6,32 +6,38 @@ const logger = require('../../../utils/logger');
 const UserModel = require('../../../models/user');
 
 passport.use(new FacebookStrategy({
-    clientID     : config.clientId,
-    clientSecret : config.clientSecret,
-    callbackURL  : config.callbackURL,
+    clientID: config.clientId,
+    clientSecret: config.clientSecret,
+    callbackURL: config.callbackURL,
     profileFields: ['id', 'email', 'gender', 'name'],
-    enableProof  : true,
+    enableProof: true,
 }, (accessToken, refreshToken, profile, cb) => {
     const data = (profile && profile._json) || {};
-    const {email, first_name, last_name, gender, id} = data;
+    const {
+        email, first_name, last_name, gender, id,
+    } = data;
 
     if (!data.email) {
         logger.log({
-            level  : 'error',
+            level: 'error',
             message: 'Email field is required for Facebook account',
         });
         return cb(new Error('Email is required field, so you must to set it up in your Facebook account'));
     }
 
-    UserModel.findOneAndUpdate({email}, {
+    UserModel.findOneAndUpdate({
+        email,
+    }, {
         $set: {
             email,
-            'meta.firstName'   : first_name,
-            'meta.lastName'    : last_name,
-            'meta.gender'      : gender,
+            'meta.firstName': first_name,
+            'meta.lastName': last_name,
+            'meta.gender': gender,
             'social.facebookId': id,
-        }
-    }, {upsert: true}, (err, result) => {
+        },
+    }, {
+        upsert: true,
+    }, (err, result) => {
         if (err) {
             return cb(err);
         }
@@ -43,14 +49,13 @@ passport.use(new FacebookStrategy({
 const router = new express.Router();
 
 router.get('/', passport.authenticate('facebook', {
-    authType     : 'rerequest',
-    scope        : ['public_profile', 'email'],
+    authType: 'rerequest',
+    scope: ['public_profile', 'email'],
     return_scopes: true,
 }));
 
 router.get('/callback', passport.authenticate('facebook', {failureRedirect: '/v1/oauth/facebook/failureCallback'}),
     (req, res) => {
-        console.log();
         res.redirect('/');
     });
 

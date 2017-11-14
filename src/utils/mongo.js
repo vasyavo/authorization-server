@@ -1,32 +1,43 @@
-const Mongoose = require('mongoose');
-const config = require('./../config');
-const logger = require('./logger');
+module.exports = (async () => {
+    const MongoDB = require('mongodb');
+    const pkg = require('./../../package.json');
+    const config = require('./../config');
+    const logger = require('./logger');
 
-const dbUri = config.mongodbUri;
+    const dbUri = config.mongodbUri;
 
-Mongoose.connect(dbUri);
+    const db = await MongoDB.MongoClient.connect(dbUri, {
+        poolSize: 5,
+        ssl: true,
+        checkServerIdentity: true,
+        autoReconnect: true,
+        noDelay: true,
+        appname: pkg.name,
+    });
 
-// When successfully connected
-Mongoose.connection.on('connected', () => {
-    logger.info(`Mongoose default connection open to ${dbUri}`);
-});
+// Successfully connected
+    db.on('fullsetup', () => {
+        logger.info(`Driver default connection open to ${dbUri}`);
+    });
 
 // If the connection throws an error
-Mongoose.connection.on('error', (err) => {
-    logger.error(`Mongoose default connection error: ${dbUri}`, err);
-});
-
-// When the connection is disconnected
-Mongoose.connection.on('disconnected', () => {
-    logger.error('Mongoose default connection disconnected');
-});
-
-// If the Node process ends, close the Mongoose connection
-process.on('SIGINT', () => {
-    Mongoose.connection.close(() => {
-        logger.info('Mongoose default connection disconnected through app termination');
-        process.exit(0);
+    db.on('error', (err) => {
+        logger.error(`Driver default connection error: ${dbUri}`, err);
+        this.throw(err);
     });
-});
 
-module.exports = Mongoose.connection;
+// When the connection is closed
+    db.on('close', () => {
+        logger.error('Driver default connection disconnected');
+    });
+
+// If the Node process ends, close the db connection
+    process.on('SIGINT', () => {
+        db.close(() => {
+            logger.info('Driver default connection disconnected through app termination');
+            process.exit(0);
+        });
+    });
+
+    return db;
+})();
