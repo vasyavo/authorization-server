@@ -71,6 +71,7 @@ async function signIn(req, res, next) {
             access_token: accessToken,
             refresh_token: refreshToken,
             expires_in: expiresIn,
+            token_type: 'Bearer',
         });
     } catch (error) {
         return next(error);

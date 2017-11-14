@@ -1,5 +1,6 @@
 {
   "access_token": "ACCESS_TOKEN",
+  "token_type": "Bearer",
   "expires_in": "8600",
   "refresh_token": "REFRESH_TOKEN",
   "scope": [

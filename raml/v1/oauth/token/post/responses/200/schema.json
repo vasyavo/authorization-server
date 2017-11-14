@@ -5,6 +5,10 @@
     "access_token": {
       "type": "string"
     },
+    "token_type": {
+      "type": "string",
+      "enum": ["Bearer"]
+    },
     "expires_in": {
       "type": "string"
     },

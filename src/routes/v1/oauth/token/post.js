@@ -72,9 +72,10 @@ async function signIn(req, res, next) {
         });
 
         res.status(200).send({
-            access_token : accessToken,
+            access_token: accessToken,
             refresh_token: refreshToken,
-            expires_in   : expiresIn,
+            expires_in: expiresIn,
+            token_type: 'Bearer',
         });
     } catch (error) {
         return next(error);
