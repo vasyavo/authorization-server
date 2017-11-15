@@ -46,6 +46,7 @@ co(function * () {
         app.post('/v1/oauth/revoke', require('./handlers/user/revokeToken'));
         app.post('/v1/oauth/token', require('./routes/v1/oauth/token/post'));
         app.post('/v1/oauth/access_token', require('./routes/v1/oauth/access_token/post'));
+        app.get('/v1/user_info', require('./routes/v1/user_info/get'));
         app.use('/v1/oauth/facebook', require('./routes/social/facebook/router'));
         app.use('/v1/oauth/linkedIn', require('./routes/social/linkedIn/router'));
 

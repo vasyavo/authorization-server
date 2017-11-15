@@ -14,7 +14,7 @@ const genAccessToken = (expiration) => {
     const expiresIn = now + expiration;
 
     return {
-        hash : tokenHash,
+        hash: tokenHash,
         expiresIn,
     };
 };

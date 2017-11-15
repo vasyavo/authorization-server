@@ -8,20 +8,22 @@ const {
 const ttl = require('../../../../config').security.expiresIn;
 
 async function signIn(req, res, next) {
+    const body = req.body;
+
     const ClientCollection = await ClientConnection;
     const TokenCollection = await TokenConnection;
 
-    const {
-        client_id: clientId,
-        client_secret: clientSecret,
-        access_token: accessToken,
-        scope,
-    } = req.body;
+    const tokenInfo = {
+        clientId: body.client_id,
+        clientSecret: body.client_secret,
+        accessToken: body.access_token,
+        scope: body.scope,
+    };
 
     try {
         const client = await ClientCollection.findOne({
-            clientId,
-            clientSecret,
+            clientId: tokenInfo.clientId,
+            clientSecret: tokenInfo.clientSecret,
         });
 
         if (!client) {
@@ -31,17 +33,7 @@ async function signIn(req, res, next) {
         return next(error);
     }
 
-    let uid;
-
-    try {
-        const accessTokenInfo = await TokenCollection.findOne({accessToken});
-
-        uid = accessTokenInfo.userId;
-    } catch (error) {
-        return next(error);
-    }
-
-    const tokenInfo = {
+    const newTokenInfo = {
         token_type: 'Bearer',
     };
 
@@ -53,30 +45,32 @@ async function signIn(req, res, next) {
         const {
             hash: refreshToken,
         } = genAccessToken(ttl);
+        const timestamp = Date.now();
 
         await TokenCollection.findOneAndUpdate({
-            userId: uid,
+            accessToken: tokenInfo.accessToken,
             scope: {
-                $in: scope,
+                $in: tokenInfo.scope,
+            },
+            expiresIn: {
+                $gt: timestamp,
             },
         }, {
             $set: {
-                scope,
                 accessToken,
                 refreshToken,
                 expiresIn,
-                userId: uid,
             }
         });
 
-        tokenInfo.access_token = accessToken;
-        tokenInfo.refresh_token = refreshToken;
-        tokenInfo.expires_in = expiresIn;
+        newTokenInfo.access_token = accessToken;
+        newTokenInfo.refresh_token = refreshToken;
+        newTokenInfo.expires_in = expiresIn;
     } catch (error) {
         return next(error);
     }
 
-    res.status(200).send(tokenInfo);
+    res.status(200).send(newTokenInfo);
 }
 
 module.exports = signIn;

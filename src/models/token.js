@@ -7,47 +7,49 @@ module.exports = co(function * () {
 
     const collection = yield db.createCollection(collectionName, {
         validator: {
-            $and: [{
-                accessToken: {
+            $and: [
+                { accessToken: {
                     $and: [{
                         $exists: true,
                     }, {
                         $type: 'string',
                     }],
-                },
-            }, {
-                refreshToken: {
+                } },
+                { refreshToken: {
                     $and: [{
                         $exists: true,
                     }, {
                         $type: 'string',
                     }],
-                },
-            }, {
-                expiresIn: {
+                } },
+                { expiresIn: {
                     $and: [{
                         $exists: true,
                     }, {
                         $type: 'number',
                     }],
-                },
-            }, {
-                scope: {
+                } },
+                { scope: {
                     $and: [{
                         $exists: true,
                     }, {
                         $type: 'array',
                     }],
-                },
-            }, {
-                userId: {
+                } },
+                { userId: {
                     $and: [{
                         $exists: true,
                     }, {
                         $type: 'objectId',
                     }],
-                },
-            },
+                } },
+                { createdAt: {
+                    $and: [{
+                        $exists: true,
+                    }, {
+                        $type: 'date',
+                    }],
+                } },
             ],
         },
 
@@ -56,7 +58,7 @@ module.exports = co(function * () {
     });
 
     yield collection.createIndex({
-        userId: 1,
+        accessToken: 1,
     }, {
         unique: true,
     });
