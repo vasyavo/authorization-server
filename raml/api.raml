@@ -236,7 +236,7 @@ types:
           application/json:
             example: |
               {
-                "uid": "58457fe6b27..."
+                "user_id": "58457fe6b27..."
               }
 
 /v1/user_info:
@@ -255,17 +255,4 @@ types:
     responses:
       200:
         body:
-          application/json:
-            example: |
-              {
-                "email_verified": false,
-                "email": "test.account@userinfo.com",
-                "clientID": "q2hnj2iu...",
-                "updated_at": "2016-12-05T15:15:40.545Z",
-                "name": "test.account@userinfo.com",
-                "picture": "https://s.gravatar.com/avatar/dummy.png",
-                "user_id": "auth0|58454...",
-                "nickname": "test.account",
-                "created_at": "2016-12-05T11:16:59.640Z",
-                "sub": "auth0|58454..."
-              }
+          example: !include v1/user_info/get/responses/200/example.json
