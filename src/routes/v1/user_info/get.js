@@ -8,7 +8,6 @@ async function signIn(req, res, next) {
     let userId;
 
     try {
-        console.log(accessToken);
         const tokenInfo = await TokenCollection.findOne({ accessToken });
 
         if (!tokenInfo) {
