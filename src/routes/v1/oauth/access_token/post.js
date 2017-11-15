@@ -41,6 +41,10 @@ async function signIn(req, res, next) {
         return next(error);
     }
 
+    const tokenInfo = {
+        token_type: 'Bearer',
+    };
+
     try {
         const {
             hash: accessToken,
@@ -63,19 +67,16 @@ async function signIn(req, res, next) {
                 expiresIn,
                 userId: uid,
             }
-        }, {
-            upsert: true,
         });
 
-        res.status(200).send({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            expires_in: expiresIn,
-            token_type: 'Bearer',
-        });
+        tokenInfo.access_token = accessToken;
+        tokenInfo.refresh_token = refreshToken;
+        tokenInfo.expires_in = expiresIn;
     } catch (error) {
         return next(error);
     }
+
+    res.status(200).send(tokenInfo);
 }
 
 module.exports = signIn;
