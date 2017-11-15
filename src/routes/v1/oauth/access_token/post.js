@@ -47,25 +47,39 @@ async function signIn(req, res, next) {
         } = genAccessToken(ttl);
         const timestamp = Date.now();
 
-        await TokenCollection.findOneAndUpdate({
+        const query = {
             accessToken: tokenInfo.accessToken,
             scope: {
                 $in: tokenInfo.scope,
             },
             expiresIn: {
-                $gt: timestamp,
+                $lt: timestamp,
             },
-        }, {
+        };
+        const options = {
+            projection: {
+                accessToken: 1,
+                refreshToken: 1,
+                expiresIn: 1,
+            },
+            returnOriginal: false,
+        };
+
+        const result = await TokenCollection.findOneAndUpdate(query, {
             $set: {
                 accessToken,
                 refreshToken,
                 expiresIn,
             }
-        });
+        }, options);
 
-        newTokenInfo.access_token = accessToken;
-        newTokenInfo.refresh_token = refreshToken;
-        newTokenInfo.expires_in = expiresIn;
+        if (!result.value) {
+            return next(new Error('Invalid access token.'));
+        }
+
+        newTokenInfo.access_token = result.value.accessToken;
+        newTokenInfo.refresh_token = result.value.refreshToken;
+        newTokenInfo.expires_in = result.value.expiresIn;
     } catch (error) {
         return next(error);
     }
