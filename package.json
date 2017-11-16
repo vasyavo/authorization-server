@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node $NODE_DEBUG_OPTION src/server.js",
     "dev": "cross-env NODE_ENV=development node src/server.js",
     "postinstall": "npm run ramldoc",
     "tunnel": "cross-env lt --port 3000",
