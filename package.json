@@ -50,6 +50,7 @@
     "express-request-id": "^1.4.0",
     "express-session": "1.15.6",
     "localtunnel": "^1.8.3",
+    "lodash": "^4.17.4",
     "mongodb": "^2.2.33",
     "mongodb-migrate": "^2.0.2",
     "nconf": "^0.8.5",

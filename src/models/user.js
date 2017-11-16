@@ -1,11 +1,9 @@
-const co = require('co');
 const collectionName = require('../constants/contentType').USER;
 const connection = require('../utils/connection');
 
-module.exports = co(function * () {
-    const db = yield connection;
-
-    const collection = yield db.createCollection(collectionName, {
+module.exports = (async () => {
+    const db = await connection;
+    const collection = await db.createCollection(collectionName, {
         validator: {
             $and: [{
                 email: {
@@ -63,6 +61,22 @@ module.exports = co(function * () {
                         $exists: false,
                     }],
                 },
+            }, {
+                'meta.bio': {
+                    $or: [{
+                        $type: 'string',
+                    }, {
+                        $exists: false,
+                    }],
+                },
+            }, {
+                'meta.country': {
+                    $or: [{
+                        $type: 'string',
+                    }, {
+                        $exists: false,
+                    }],
+                },
             },
             ],
         },
@@ -71,11 +85,11 @@ module.exports = co(function * () {
         validationAction: 'error',
     });
 
-    yield collection.createIndex({
+    await collection.createIndex({
         email: 1,
     }, {
         unique: true,
     });
 
     return collection;
-});
+})();

@@ -1,10 +1,11 @@
-const co = require('co');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
 const express = require('express');
-const config = require('../../../config/index').thirdParty.facebook;
+const {websiteUrl, thirdParty: {facebook: config}} = require('../../../config/');
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
+const queryString = require('querystring');
+const _ = require('lodash');
 
 passport.use(new FacebookStrategy({
     clientID: config.clientId,
@@ -13,15 +14,19 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'email', 'gender', 'name'],
     enableProof: true,
 }, (accessToken, refreshToken, profile, cb) => {
-    co(function * () {
-        const UserCollection = yield UserConnection;
+    (async () => {
+        const UserCollection = await UserConnection;
 
         const data = (profile && profile._json) || {};
         const {
-            email, first_name, last_name, gender, id,
+            email,
+            first_name,
+            last_name,
+            gender,
+            id,
         } = data;
 
-        if (!data.email) {
+        if (!email) {
             logger.log({
                 level: 'error',
                 message: 'Email field is required for Facebook account',
@@ -30,7 +35,7 @@ passport.use(new FacebookStrategy({
         }
 
         try {
-            const result = yield UserCollection.findOneAndUpdate({
+            const result = await UserCollection.findOneAndUpdate({
                 email,
             }, {
                 $set: {
@@ -40,13 +45,13 @@ passport.use(new FacebookStrategy({
                     'meta.gender': gender,
                     'social.facebookId': id,
                 },
-            }, { upsert: true });
+            }, {upsert: true});
 
-            cb(null, result);
+            cb(null, result && result.value && result.value.meta);
         } catch (error) {
             cb(error);
         }
-    });
+    })();
 }));
 
 const router = new express.Router();
@@ -59,11 +64,23 @@ router.get('/', passport.authenticate('facebook', {
 
 router.get('/callback', passport.authenticate('facebook', {failureRedirect: '/v1/oauth/facebook/failureCallback'}),
     (req, res) => {
-        res.redirect('/');
+        let user = req.user;
+        const dictionary = {
+            firstName: 'first_name',
+            lastName: 'last_name',
+        };
+
+        user = _.mapKeys(user, (value, key) => {
+            return dictionary[key] || key;
+        });
+
+        const queryStr = queryString.stringify(user);
+
+        res.redirect(`${websiteUrl}?${queryStr}`);
     });
 
 router.get('/failureCallback', (req, res) => {
-    res.redirect('/');
+    res.redirect(`${websiteUrl}?failureMessage=Can\'t sign in with Facebook`);
 });
 
 module.exports = router;

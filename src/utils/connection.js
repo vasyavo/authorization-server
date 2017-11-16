@@ -1,5 +1,4 @@
 const MongoDB = require('mongodb');
-const co = require('co');
 
 const pkg = require('./../../package.json');
 const config = require('./../config');
@@ -7,10 +6,9 @@ const logger = require('./logger');
 
 const dbUri = config.mongodbUri;
 
-module.exports = co(function * () {
-    const db = yield MongoDB.MongoClient.connect(dbUri, {
+module.exports = (async () => {
+    const db = await MongoDB.MongoClient.connect(dbUri, {
         poolSize: 5,
-        ssl: true,
         checkServerIdentity: true,
         autoReconnect: true,
         noDelay: true,
@@ -42,4 +40,4 @@ module.exports = co(function * () {
     });
 
     return db;
-});
+})();

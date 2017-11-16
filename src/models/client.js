@@ -1,11 +1,9 @@
-const co = require('co');
 const collectionName = require('../constants/contentType').CLIENT;
 const connection = require('../utils/connection');
 
-module.exports = co(function * () {
-    const db = yield connection;
-
-    const collection = yield db.createCollection(collectionName, {
+module.exports = (async () => {
+    const db = await connection;
+    const collection = await db.createCollection(collectionName, {
         validator: {
             $and: [{
                 clientId: {
@@ -39,7 +37,7 @@ module.exports = co(function * () {
         validationAction: 'error',
     });
 
-    yield collection.createIndex({
+    await collection.createIndex({
         clientId: 1,
         clientSecret: 1,
         name: 1,
@@ -48,4 +46,4 @@ module.exports = co(function * () {
     });
 
     return collection;
-});
+})();
