@@ -54,7 +54,7 @@ module.exports = (async () => {
     });
 
     await collection.createIndex({
-        userId: 1,
+        accessToken: 1,
     }, {
         unique: true,
     });
