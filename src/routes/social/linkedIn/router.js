@@ -2,9 +2,17 @@ const co = require('co');
 const passport = require('passport');
 const { Strategy: LinkedInStrategy } = require('passport-linkedin-oauth2');
 const express = require('express');
-const config = require('../../../config/index').thirdParty.linkedIn;
+const {
+    websiteUrl,
+    thirdParty: {
+        linkedIn: config,
+    },
+} = require('../../../config/');
+
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
+const queryString = require('querystring');
+const _ = require('lodash');
 
 passport.use(new LinkedInStrategy({
     clientID: config.clientId,
@@ -16,9 +24,18 @@ passport.use(new LinkedInStrategy({
         const UserCollection = yield UserConnection;
 
         const data = (profile && profile._json) || {};
-        const { emailAddress: email, firstName, lastName, id } = data;
+        const {
+            emailAddress: email,
+            firstName,
+            lastName,
+            id,
+            summary,
+            location: {
+                name: country,
+            },
+        } = data;
 
-        if (!data.email) {
+        if (!email) {
             logger.log({
                 level: 'error',
                 message: 'Email field is required for LinkedIn account',
@@ -27,16 +44,18 @@ passport.use(new LinkedInStrategy({
         }
 
         try {
-            const result = UserCollection.findOneAndUpdate({ email }, {
+            const result = await UserCollection.findOneAndUpdate({email}, {
                 $set: {
                     email,
                     'meta.firstName': firstName,
                     'meta.lastName': lastName,
+                    'meta.bio': summary,
+                    'meta.country': country,
                     'social.linkedId': id,
                 },
             }, { upsert: true });
 
-            cb(null, result);
+            cb(null, result && result.value && result.value.meta);
         } catch (error) {
             cb(error);
         }
@@ -45,18 +64,31 @@ passport.use(new LinkedInStrategy({
 
 const router = new express.Router();
 
-router.get('/', passport.authenticate('linkedin', {
-    state: 'SOME STATE',
+router.get('/', passport.authenticate('linkedin'));
+
+router.get('/callback', passport.authenticate('linkedin', {
+    failureRedirect: '/v1/oauth/linkedIn/failureCallback',
+    successRedirect: '/v1/oauth/linkedIn/successRedirect',
 }));
 
-router.get('/callback', passport.authenticate('linkedin', { failureRedirect: '/v1/oauth/linkedIn/failureCallback' }),
-    (req, res) => {
-        console.log();
-        res.redirect('/');
+router.get('/successRedirect', (req, res) => {
+    let user = req.user;
+    const dictionary = {
+        firstName: 'first_name',
+        lastName: 'last_name',
+    };
+
+    user = _.mapKeys(user, (value, key) => {
+        return dictionary[key] || key;
     });
 
+    const queryStr = queryString.stringify(user);
+
+    res.redirect(`${websiteUrl}?${queryStr}`);
+});
+
 router.get('/failureCallback', (req, res) => {
-    res.redirect('/');
+    res.redirect(`${websiteUrl}?failureMessage`);
 });
 
 module.exports = router;

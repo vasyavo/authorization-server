@@ -63,6 +63,22 @@ module.exports = co(function * () {
                         $exists: false,
                     }],
                 },
+            }, {
+                'meta.bio': {
+                    $or: [{
+                        $type: 'string',
+                    }, {
+                        $exists: false,
+                    }],
+                },
+            }, {
+                'meta.country': {
+                    $or: [{
+                        $type: 'string',
+                    }, {
+                        $exists: false,
+                    }],
+                },
             },
             ],
         },

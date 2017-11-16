@@ -47,5 +47,7 @@ config.thirdParty = {
     },
 };
 
+config.websiteUrl = process.env.WEBSITE_URL;
+
 // import this file at begin of server.js
 module.exports = config;
