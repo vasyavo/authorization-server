@@ -1,26 +1,61 @@
 const TokenConnection = require('../../../models/token');
+const contentTypes = require('../../../constants/contentType');
 
 async function signIn(req, res, next) {
     const TokenCollection = await TokenConnection;
 
     const { access_token: accessToken } = req.query;
 
-    let userId;
+    let user;
 
     try {
-        const tokenInfo = await TokenCollection.findOne({ accessToken });
+        const pipeline = [
+            {
+                $match: {
+                    accessToken,
+                }
+            },
+            {
+                $project: {
+                    user: '$userId',
+                },
+            },
+            {
+                $lookup: {
+                    from: contentTypes.USER,
+                    foreignField: '_id',
+                    localField: 'user',
+                    as: 'users',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$users',
+                },
+            },
+            {
+                $replaceRoot: {
+                    newRoot: '$users',
+                },
+            },
+            {
+                $project: {
+                    userId: 1,
+                    email: 1,
+                },
+            }
+        ];
 
-        if (!tokenInfo) {
-            return next(new Error('Invalid access token.'));
-        }
-
-        userId = tokenInfo.userId;
+        [user] = await TokenCollection
+            .aggregate(pipeline, { allowDiskUse: true })
+            .toArray();
     } catch (error) {
         return next(error);
     }
 
     res.status(200).send({
-        user_id: userId,
+        user_id: user._id,
+        email: user.email,
     });
 }
 
