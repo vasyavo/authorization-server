@@ -1,6 +1,7 @@
 const UserConnection = require('../../../../models/user');
 const ClientConnection = require('../../../../models/client');
 const TokenConnection = require('../../../../models/token');
+const logger = require('./../../../../utils/logger');
 const generateError = require('../../../../utils/errorGenerator');
 const {
     encryptPassword,
@@ -24,12 +25,16 @@ async function signIn(req, res, next) {
     let userId;
 
     try {
-        const client = await ClientCollection.findOne({
+        const credentials = {
             clientId,
             clientSecret,
-        });
+        };
+
+        const client = await ClientCollection.findOne(credentials);
 
         if (!client) {
+            logger.error('Try to access using credentials:', credentials);
+
             return next(generateError('You can\'t sign in through your application'));
         }
     } catch (error) {
