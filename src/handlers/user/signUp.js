@@ -3,7 +3,7 @@ const ClientConnection = require('../../models/client');
 const generateError = require('../../utils/errorGenerator');
 const {encryptPassword} = require('../../utils/encryptionHelper');
 
-async function signUp(req, res, next) {
+const signUp = async (req, res, next) => {
     const UserCollection = await UserConnection;
     const ClientCollection = await ClientConnection;
 

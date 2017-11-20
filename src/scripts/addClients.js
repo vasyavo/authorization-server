@@ -1,9 +1,11 @@
 const contentType = require('../constants/contentType');
-const MongoClient = require('mongodb').MongoClient;
+const {
+    MongoClient,
+} = require('mongodb');
 const url = 'mongodb://localhost:27017/weltou';
 const clients = [{
-    name        : 'Weltou',
-    clientId    : '5a02e8121652c75396dd33ad',
+    name: 'Weltou',
+    clientId: '5a02e8121652c75396dd33ad',
     clientSecret: '5a02ea4e1652c75396dd33ae',
 }];
 

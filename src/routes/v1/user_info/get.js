@@ -1,10 +1,10 @@
 const TokenConnection = require('../../../models/token');
 const contentTypes = require('../../../constants/contentType');
 
-async function signIn(req, res, next) {
+const signIn = async (req, res, next) => {
     const TokenCollection = await TokenConnection;
 
-    const { access_token: accessToken } = req.query;
+    const {access_token: accessToken} = req.query;
 
     let user;
 
@@ -40,14 +40,13 @@ async function signIn(req, res, next) {
             },
             {
                 $project: {
-                    userId: 1,
                     email: 1,
                 },
             }
         ];
 
         [user] = await TokenCollection
-            .aggregate(pipeline, { allowDiskUse: true })
+            .aggregate(pipeline, {allowDiskUse: true})
             .toArray();
     } catch (error) {
         return next(error);

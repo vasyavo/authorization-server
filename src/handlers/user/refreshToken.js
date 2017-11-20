@@ -4,7 +4,7 @@ const generateError = require('../../utils/errorGenerator');
 const {genAccessToken} = require('../../utils/encryptionHelper');
 const {security: {expiresIn: timeToAlive}} = require('../../config');
 
-async function refreshToken(req, res, next) {
+const refreshToken = async (req, res, next) => {
     const ClientCollection = await ClientConnection;
     const TokenCollection = await TokenConnection;
 
@@ -47,9 +47,9 @@ async function refreshToken(req, res, next) {
         });
 
         res.status(200).send({
-            access_token : accessToken,
+            access_token: accessToken,
             refresh_token: refreshToken,
-            expires_in   : expiresIn,
+            expires_in: expiresIn,
         });
     } catch (e) {
         return next(e);

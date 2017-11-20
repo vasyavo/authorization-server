@@ -9,7 +9,7 @@ const {
 } = require('../../../../utils/encryptionHelper');
 const ttl = require('../../../../config').security.expiresIn;
 
-async function signIn(req, res, next) {
+const signIn = async (req, res, next) => {
     const UserCollection = await UserConnection;
     const ClientCollection = await ClientConnection;
     const TokenCollection = await TokenConnection;
