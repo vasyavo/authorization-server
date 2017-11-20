@@ -1,5 +1,5 @@
-const TokenConnection = require('../../../models/token');
-const contentTypes = require('../../../constants/contentType');
+const TokenConnection = require('../../../../models/token');
+const contentTypes = require('../../../../constants/contentType');
 
 const signIn = async (req, res, next) => {
     const TokenCollection = await TokenConnection;

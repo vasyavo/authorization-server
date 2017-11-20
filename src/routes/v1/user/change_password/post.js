@@ -1,10 +1,10 @@
-const UserConnection = require('../../../models/user');
-const ClientConnection = require('../../../models/client');
-const logger = require('./../../../utils/logger');
-const generateError = require('../../../utils/errorGenerator');
+const UserConnection = require('../../../../models/user');
+const ClientConnection = require('../../../../models/client');
+const logger = require('../../../../utils/logger');
+const generateError = require('../../../../utils/errorGenerator');
 const {
     encryptPassword,
-} = require('../../../utils/encryptionHelper');
+} = require('../../../../utils/encryptionHelper');
 
 const signIn = async (req, res, next) => {
     const UserCollection = await UserConnection;

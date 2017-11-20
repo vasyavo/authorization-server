@@ -19,18 +19,18 @@ process.on('uncaughtException', (error) => {
 
 const app = express();
 
-co(function * () {
+co(function* () {
     app.use(addRequestId);
     app.use(compress());
 
-    passport.serializeUser(function (user, done) {
+    passport.serializeUser((user, done) => {
         done(null, user);
     });
 
     app.use(passport.initialize());
 
     app.disable('x-powered-by');
-    app.use(bodyParser.json({ extended: true }));
+    app.use(bodyParser.json({extended: true}));
 
     app.get('/v1/api', require('./utils/sendRamlDoc'));
 
@@ -41,15 +41,15 @@ co(function * () {
         } = yield* osprey();
 
         // app.use(middleware);
-        app.post('/v1/sign_up', require('./handlers/user/signUp'));
-        app.post('/v1/oauth/refresh', require('./handlers/user/refreshToken'));
-        app.post('/v1/oauth/revoke', require('./handlers/user/revokeToken'));
+        app.post('/v1/sign_up', require('./routes/v1/user/signUp/post'));
+        app.post('/v1/oauth/refresh', require('./routes/v1/oauth/refreshToken/post'));
+        app.post('/v1/oauth/revoke', require('./routes/v1/oauth/revokeToken/post'));
         app.post('/v1/oauth/token', require('./routes/v1/oauth/token/post'));
         app.post('/v1/oauth/access_token', require('./routes/v1/oauth/access_token/post'));
-        app.get('/v1/user_info', require('./routes/v1/user_info/get'));
-        app.post('/v1/change_password', require('./routes/v1/change_password/post'));
-        app.use('/v1/oauth/facebook', require('./routes/social/facebook/router'));
-        app.use('/v1/oauth/linkedIn', require('./routes/social/linkedIn/router'));
+        app.get('/v1/user_info', require('./routes/v1/user/user_info/get'));
+        app.post('/v1/change_password', require('./routes/v1/user/change_password/post'));
+        app.use('/v1/oauth/facebook', require('./routes/v1/social/facebook/router'));
+        app.use('/v1/oauth/linkedIn', require('./routes/v1/social/linkedIn/router'));
 
         app.use(mockService);
     }
