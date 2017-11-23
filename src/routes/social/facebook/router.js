@@ -1,9 +1,9 @@
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
 const express = require('express');
-const {websiteUrl, thirdParty: {facebook: config}} = require('../../../../config/index');
-const logger = require('../../../../utils/logger');
-const UserConnection = require('../../../../models/user');
+const {websiteUrl, thirdParty: {facebook: config}} = require('../../../config/');
+const logger = require('../../../utils/logger');
+const UserConnection = require('../../../models/user');
 const queryString = require('querystring');
 const _ = require('lodash');
 

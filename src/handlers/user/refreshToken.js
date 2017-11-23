@@ -1,8 +1,8 @@
-const ClientConnection = require('../../../../models/client');
-const TokenConnection = require('../../../../models/token');
-const generateError = require('../../../../utils/errorGenerator');
-const {genAccessToken} = require('../../../../utils/encryptionHelper');
-const {security: {expiresIn: timeToAlive}} = require('../../../../config/index');
+const ClientConnection = require('../../models/client');
+const TokenConnection = require('../../models/token');
+const generateError = require('../../utils/errorGenerator');
+const {genAccessToken} = require('../../utils/encryptionHelper');
+const {security: {expiresIn: timeToAlive}} = require('../../config');
 
 const refreshToken = async (req, res, next) => {
     const ClientCollection = await ClientConnection;

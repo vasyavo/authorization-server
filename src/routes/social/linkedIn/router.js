@@ -1,10 +1,10 @@
 const passport = require('passport');
 const {Strategy: LinkedInStrategy} = require('passport-linkedin-oauth2');
 const express = require('express');
-const {websiteUrl, thirdParty: {linkedIn: config}} = require('../../../../config/index');
+const {websiteUrl, thirdParty: {linkedIn: config}} = require('../../../config/');
 
-const logger = require('../../../../utils/logger');
-const UserConnection = require('../../../../models/user');
+const logger = require('../../../utils/logger');
+const UserConnection = require('../../../models/user');
 const queryString = require('querystring');
 const _ = require('lodash');
 
