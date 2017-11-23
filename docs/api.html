@@ -177,6 +177,7 @@
   ]
 }</code></pre></div></div><div class="tab-pane" id="v1_oauth_token_post_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "access_token": "ACCESS_TOKEN",
+  "token_type": "Bearer",
   "expires_in": "8600",
   "refresh_token": "REFRESH_TOKEN",
   "scope": [
@@ -194,6 +195,7 @@
   ]
 }</code></pre></div></div><div class="tab-pane" id="v1_oauth_access_token_post_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "access_token": "ACCESS_TOKEN",
+  "token_type": "Bearer",
   "expires_in": "8600",
   "refresh_token": "REFRESH_TOKEN",
   "scope": [
@@ -235,18 +237,8 @@
   "password": "USER_PASSWORD"
 }
 </code></pre></div></div><div class="tab-pane" id="v1_change_password_post_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
-  "uid": "58457fe6b27..."
+  "user_id": "58457fe6b27..."
 }
 </code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="v1_user_info" class="panel-title">/v1/user_info</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_user_info"><span class="parent"></span>/v1/user_info</a> <span class="methods"><a href="#v1_user_info_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_v1_user_info" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_user_info_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Given the authorization server access token obtained during login, this endpoint returns a user&#39;s profile. This endpoint will work only if <em>openid</em> was granted as a scope for the <em>access_token</em>.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_user_info_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/v1/user_info</h4></div><div class="modal-body"><div class="alert alert-info"><p>Given the authorization server access token obtained during login, this endpoint returns a user&#39;s profile. This endpoint will work only if <em>openid</em> was granted as a scope for the <em>access_token</em>.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_user_info_get_request" data-toggle="tab">Request</a></li><li><a href="#v1_user_info_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_user_info_get_request"><h3>Query Parameters</h3><ul><li><strong>access_token</strong>: <em>required (string - minLength: 5)</em><p>The authorization server <em>access_token</em> obtained during login.</p></li></ul></div><div class="tab-pane" id="v1_user_info_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
-  "email_verified": false,
-  "email": "test.account@userinfo.com",
-  "clientID": "q2hnj2iu...",
-  "updated_at": "2016-12-05T15:15:40.545Z",
-  "name": "test.account@userinfo.com",
-  "picture": "https://s.gravatar.com/avatar/dummy.png",
-  "user_id": "auth0|58454...",
-  "nickname": "test.account",
-  "created_at": "2016-12-05T11:16:59.640Z",
-  "sub": "auth0|58454..."
-}
-</code></pre></div></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#v1_oauth_token">/v1/oauth/token</a></li><li><a href="#v1_oauth_access_token">/v1/oauth/access_token</a></li><li><a href="#v1_oauth_facebook">/v1/oauth/facebook</a></li><li><a href="#v1_oauth_facebook_callback">/v1/oauth/facebook/callback</a></li><li><a href="#v1_oauth_refresh">/v1/oauth/refresh</a></li><li><a href="#v1_oauth_revoke">/v1/oauth/revoke</a></li><li><a href="#v1_sign_up">/v1/sign_up</a></li><li><a href="#v1_change_password">/v1/change_password</a></li><li><a href="#v1_user_info">/v1/user_info</a></li></ul></div></div></div></div></body></html>
+  "user_id": "58457fe6b27..."
+}</code></pre></div></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#v1_oauth_token">/v1/oauth/token</a></li><li><a href="#v1_oauth_access_token">/v1/oauth/access_token</a></li><li><a href="#v1_oauth_facebook">/v1/oauth/facebook</a></li><li><a href="#v1_oauth_facebook_callback">/v1/oauth/facebook/callback</a></li><li><a href="#v1_oauth_refresh">/v1/oauth/refresh</a></li><li><a href="#v1_oauth_revoke">/v1/oauth/revoke</a></li><li><a href="#v1_sign_up">/v1/sign_up</a></li><li><a href="#v1_change_password">/v1/change_password</a></li><li><a href="#v1_user_info">/v1/user_info</a></li></ul></div></div></div></div></body></html>

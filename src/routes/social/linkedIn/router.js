@@ -44,7 +44,7 @@ passport.use(new LinkedInStrategy({
         }
 
         try {
-            const result = await UserCollection.findOneAndUpdate({email}, {
+            const result = yield UserCollection.findOneAndUpdate({email}, {
                 $set: {
                     email,
                     'meta.firstName': firstName,
