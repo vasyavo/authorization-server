@@ -51,7 +51,7 @@ passport.use(new LinkedInStrategy({
                     'meta.lastName': lastName,
                     'meta.bio': summary,
                     'meta.country': country,
-                    'social.linkedId': id,
+                    'social.linkedInId': id,
                     version: 1,
                 },
             }, {

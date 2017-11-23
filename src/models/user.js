@@ -28,10 +28,48 @@ module.exports = co(function * () {
                         { 'meta.lastName': {
                             $type: 'string',
                         } },
+                        { 'meta.bio': {
+                            $type: 'string',
+                        } },
+                        { 'meta.country': {
+                            $type: 'string',
+                        } },
+                    ],
+                },
+                {
+                    version: 1,
+                    $and: [
+                        { email: {
+                            $type: 'string',
+                        } },
                         { 'social.facebookId': {
                             $type: 'string',
                         } },
-                        { 'meta.linkedInId': {
+                        { 'meta.gender': {
+                            $in: ['male', 'female'],
+                            $type: 'string',
+                        } },
+                        { 'meta.firstName': {
+                            $type: 'string',
+                        } },
+                        { 'meta.lastName': {
+                            $type: 'string',
+                        } },
+                    ],
+                },
+                {
+                    version: 1,
+                    $and: [
+                        { email: {
+                            $type: 'string',
+                        } },
+                        { 'social.linkedInId': {
+                            $type: 'string',
+                        } },
+                        { 'meta.firstName': {
+                            $type: 'string',
+                        } },
+                        { 'meta.lastName': {
                             $type: 'string',
                         } },
                         { 'meta.bio': {
