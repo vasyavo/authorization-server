@@ -9,11 +9,8 @@ module.exports = co(function * () {
         validator: {
             $and: [
                 { email: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
+                    $exists: true,
+                    $type: 'string',
                 } },
                 { password: {
                     $or: [{
@@ -25,6 +22,7 @@ module.exports = co(function * () {
                 { 'meta.gender': {
                     $or: [{
                         $in: ['male', 'female'],
+                        $type: 'string',
                     }, {
                         $exists: false,
                     }],
@@ -73,7 +71,6 @@ module.exports = co(function * () {
                 } },
             ],
         },
-
         validationLevel: 'strict',
         validationAction: 'error',
     });

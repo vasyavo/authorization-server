@@ -9,46 +9,28 @@ module.exports = co(function * () {
         validator: {
             $and: [
                 { accessToken: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
+                    $exists: true,
+                    $type: 'string',
                 } },
                 { refreshToken: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
+                    $exists: true,
+                    $type: 'string',
                 } },
                 { expiresIn: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'number',
-                    }],
+                    $exists: true,
+                    $type: 'number',
                 } },
                 { scope: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'array',
-                    }],
+                    $exists: true,
+                    $type: 'array',
                 } },
                 { userId: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'objectId',
-                    }],
+                    $exists: true,
+                    $type: 'objectId',
                 } },
                 { createdAt: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'date',
-                    }],
+                    $exists: true,
+                    $type: 'date',
                 } },
             ],
         },

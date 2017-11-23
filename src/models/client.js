@@ -9,25 +9,16 @@ module.exports = co(function * () {
         validator: {
             $and: [
                 { clientId: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
+                    $exists: true,
+                    $type: 'string',
                 } },
                 { clientSecret: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
+                    $exists: true,
+                    $type: 'string',
                 } },
                 { name: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
+                    $exists: true,
+                    $type: 'string',
                 } },
             ],
         },
