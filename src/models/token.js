@@ -52,7 +52,6 @@ module.exports = co(function * () {
                 } },
             ],
         },
-
         validationLevel: 'strict',
         validationAction: 'error',
     });

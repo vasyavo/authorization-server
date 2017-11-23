@@ -7,79 +7,70 @@ module.exports = co(function * () {
 
     const collection = yield db.createCollection(collectionName, {
         validator: {
-            $and: [{
-                email: {
+            $and: [
+                { email: {
                     $and: [{
                         $exists: true,
                     }, {
                         $type: 'string',
                     }],
-                },
-            }, {
-                password: {
+                } },
+                { password: {
                     $or: [{
                         $type: 'string',
                     }, {
                         $exists: false,
                     }],
-                },
-            }, {
-                'meta.gender': {
+                } },
+                { 'meta.gender': {
                     $or: [{
                         $in: ['male', 'female'],
                     }, {
                         $exists: false,
                     }],
-                },
-            }, {
-                'meta.firstName': {
+                } },
+                { 'meta.firstName': {
                     $or: [{
                         $type: 'string',
                     }, {
                         $exists: false,
                     }],
-                },
-            }, {
-                'meta.lastName': {
+                } },
+                { 'meta.lastName': {
                     $or: [{
                         $type: 'string',
                     }, {
                         $exists: false,
                     }],
-                },
-            }, {
-                'social.facebookId': {
+                } },
+                { 'social.facebookId': {
                     $or: [{
                         $type: 'string',
                     }, {
                         $exists: false,
                     }],
-                },
-            }, {
-                'meta.linkedInId': {
+                } },
+                { 'meta.linkedInId': {
                     $or: [{
                         $type: 'string',
                     }, {
                         $exists: false,
                     }],
-                },
-            }, {
-                'meta.bio': {
+                } },
+                { 'meta.bio': {
                     $or: [{
                         $type: 'string',
                     }, {
                         $exists: false,
                     }],
-                },
-            }, {
-                'meta.country': {
+                } },
+                { 'meta.country': {
                     $or: [{
                         $type: 'string',
                     }, {
                         $exists: false,
                     }],
-                },
-            },
+                } },
             ],
         },
 
