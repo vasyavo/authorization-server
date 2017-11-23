@@ -40,7 +40,7 @@ co(function * () {
             mockService,
         } = yield* osprey();
 
-        // app.use(middleware);
+        app.use(middleware);
         app.post('/v1/sign_up', require('./handlers/user/signUp'));
         app.post('/v1/oauth/refresh', require('./handlers/user/refreshToken'));
         app.post('/v1/oauth/revoke', require('./handlers/user/revokeToken'));
@@ -50,8 +50,6 @@ co(function * () {
         app.post('/v1/change_password', require('./routes/v1/change_password/post'));
         app.use('/v1/oauth/facebook', require('./routes/social/facebook/router'));
         app.use('/v1/oauth/linkedIn', require('./routes/social/linkedIn/router'));
-
-        app.use(mockService);
     }
 
     app.use(require('./utils/notFound'));
