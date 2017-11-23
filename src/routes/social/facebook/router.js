@@ -2,7 +2,12 @@ const co = require('co');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
 const express = require('express');
-const config = require('../../../config/index').thirdParty.facebook;
+const {
+    websiteUrl,
+    thirdParty: {
+        facebook: config,
+    },
+} = require('../../../config/');
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
 const queryString = require('querystring');
