@@ -75,6 +75,7 @@ async function signIn(req, res, next) {
             expiresIn,
             scope,
             userId,
+            version: 1,
         });
 
         tokenInfo.access_token = accessToken;

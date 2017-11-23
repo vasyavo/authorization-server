@@ -7,68 +7,41 @@ module.exports = co(function * () {
 
     const collection = yield db.createCollection(collectionName, {
         validator: {
-            $and: [
-                { email: {
-                    $exists: true,
-                    $type: 'string',
-                } },
-                { password: {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                } },
-                { 'meta.gender': {
-                    $or: [{
-                        $in: ['male', 'female'],
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                } },
-                { 'meta.firstName': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                } },
-                { 'meta.lastName': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                } },
-                { 'social.facebookId': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                } },
-                { 'meta.linkedInId': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                } },
-                { 'meta.bio': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                } },
-                { 'meta.country': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                } },
+            $or: [
+                {
+                    version: 1,
+                    $and: [
+                        { email: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { password: {
+                            $type: 'string',
+                        } },
+                        { 'meta.gender': {
+                            $in: ['male', 'female'],
+                            $type: 'string',
+                        } },
+                        { 'meta.firstName': {
+                            $type: 'string',
+                        } },
+                        { 'meta.lastName': {
+                            $type: 'string',
+                        } },
+                        { 'social.facebookId': {
+                            $type: 'string',
+                        } },
+                        { 'meta.linkedInId': {
+                            $type: 'string',
+                        } },
+                        { 'meta.bio': {
+                            $type: 'string',
+                        } },
+                        { 'meta.country': {
+                            $type: 'string',
+                        } },
+                    ],
+                },
             ],
         },
         validationLevel: 'strict',

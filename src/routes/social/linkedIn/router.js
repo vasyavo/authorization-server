@@ -44,7 +44,7 @@ passport.use(new LinkedInStrategy({
         }
 
         try {
-            const result = yield UserCollection.findOneAndUpdate({email}, {
+            const result = yield UserCollection.findOneAndUpdate({ email }, {
                 $set: {
                     email,
                     'meta.firstName': firstName,
@@ -52,8 +52,12 @@ passport.use(new LinkedInStrategy({
                     'meta.bio': summary,
                     'meta.country': country,
                     'social.linkedId': id,
+                    version: 1,
                 },
-            }, { upsert: true });
+            }, {
+                upsert: true,
+                returnOriginal: false,
+            });
 
             cb(null, result && result.value && result.value.meta);
         } catch (error) {

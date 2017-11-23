@@ -46,8 +46,12 @@ passport.use(new FacebookStrategy({
                     'meta.lastName': last_name,
                     'meta.gender': gender,
                     'social.facebookId': id,
+                    version: 1,
                 },
-            }, { upsert: true });
+            }, {
+                upsert: true,
+                returnOriginal: false,
+            });
 
             cb(null, result && result.value && result.value.meta);
         } catch (error) {

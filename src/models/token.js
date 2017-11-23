@@ -7,31 +7,36 @@ module.exports = co(function * () {
 
     const collection = yield db.createCollection(collectionName, {
         validator: {
-            $and: [
-                { accessToken: {
-                    $exists: true,
-                    $type: 'string',
-                } },
-                { refreshToken: {
-                    $exists: true,
-                    $type: 'string',
-                } },
-                { expiresIn: {
-                    $exists: true,
-                    $type: 'number',
-                } },
-                { scope: {
-                    $exists: true,
-                    $type: 'array',
-                } },
-                { userId: {
-                    $exists: true,
-                    $type: 'objectId',
-                } },
-                { createdAt: {
-                    $exists: true,
-                    $type: 'date',
-                } },
+            $or: [
+                {
+                    version: 1,
+                    $and: [
+                        { accessToken: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { refreshToken: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { expiresIn: {
+                            $exists: true,
+                            $type: 'number',
+                        } },
+                        { scope: {
+                            $exists: true,
+                            $type: 'array',
+                        } },
+                        { userId: {
+                            $exists: true,
+                            $type: 'objectId',
+                        } },
+                        { createdAt: {
+                            $exists: true,
+                            $type: 'date',
+                        } },
+                    ],
+                },
             ],
         },
         validationLevel: 'strict',

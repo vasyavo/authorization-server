@@ -34,6 +34,7 @@ async function signUp(req, res, next) {
             email,
             password: encryptPassword(password),
             meta,
+            version: 1,
         });
 
         res.status(200).send({

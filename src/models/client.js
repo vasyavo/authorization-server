@@ -7,19 +7,24 @@ module.exports = co(function * () {
 
     const collection = yield db.createCollection(collectionName, {
         validator: {
-            $and: [
-                { clientId: {
-                    $exists: true,
-                    $type: 'string',
-                } },
-                { clientSecret: {
-                    $exists: true,
-                    $type: 'string',
-                } },
-                { name: {
-                    $exists: true,
-                    $type: 'string',
-                } },
+            $or: [
+                {
+                    version: 1,
+                    $and: [
+                        { clientId: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { clientSecret: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { name: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                    ],
+                },
             ],
         },
         validationLevel: 'strict',
