@@ -2,7 +2,7 @@ const ClientConnection = require('../../models/client');
 const TokenConnection = require('../../models/token');
 const generateError = require('../../utils/errorGenerator');
 
-const refreshToken = async (req, res, next) => {
+async function refreshToken(req, res, next) {
     const ClientCollection = await ClientConnection;
     const TokenCollection = await TokenConnection;
 

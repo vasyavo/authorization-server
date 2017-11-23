@@ -1,14 +1,17 @@
 const UserConnection = require('../../../models/user');
 const ClientConnection = require('../../../models/client');
+const TokenConnection = require('../../../models/token');
 const logger = require('./../../../utils/logger');
 const generateError = require('../../../utils/errorGenerator');
 const {
     encryptPassword,
 } = require('../../../utils/encryptionHelper');
+const ttl = require('../../../config').security.expiresIn;
 
-const signIn = async (req, res, next) => {
+async function signIn(req, res, next) {
     const UserCollection = await UserConnection;
     const ClientCollection = await ClientConnection;
+    const TokenCollection = await TokenConnection;
 
     const {
         client_id: clientId,

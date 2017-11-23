@@ -2,11 +2,12 @@ const ClientConnection = require('../../../../models/client');
 const TokenConnection = require('../../../../models/token');
 const generateError = require('../../../../utils/errorGenerator');
 const {
+    encryptPassword,
     genAccessToken,
 } = require('../../../../utils/encryptionHelper');
 const ttl = require('../../../../config').security.expiresIn;
 
-const signIn = async (req, res, next) => {
+async function signIn(req, res, next) {
     const body = req.body;
 
     const ClientCollection = await ClientConnection;
