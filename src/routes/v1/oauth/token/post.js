@@ -69,14 +69,16 @@ async function signIn(req, res, next) {
             hash: refreshToken,
         } = genAccessToken(ttl);
 
-        await TokenCollection.insertOne({
+        const tokenInfo = {
             accessToken,
             refreshToken,
             expiresIn,
             scope,
             userId,
             version: 1,
-        });
+        };
+
+        await TokenCollection.insertOne(tokenInfo);
 
         tokenInfo.access_token = accessToken;
         tokenInfo.refresh_token = refreshToken;

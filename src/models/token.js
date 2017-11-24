@@ -23,9 +23,8 @@ module.exports = co(function * () {
                             $exists: true,
                             $type: 'number',
                         } },
-                        { scope: {
+                        { 'scope.0': {
                             $exists: true,
-                            $type: 'array',
                         } },
                         { userId: {
                             $exists: true,
