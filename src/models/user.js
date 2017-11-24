@@ -10,13 +10,17 @@ module.exports = co(function * () {
             $or: [
                 {
                     version: 1,
-                    $and: [
-                        { email: {
-                            $exists: true,
-                            $type: 'string',
-                        } },
-                        { password: {
-                            $type: 'string',
+                    email: {
+                        $exists: true,
+                        $type: 'string',
+                    },
+                    password: {
+                        $exists: true,
+                        $type: 'string',
+                    },
+                    $or: [
+                        { meta: {
+                            $type: 'object',
                         } },
                         { 'meta.gender': {
                             $in: ['male', 'female'],
@@ -38,12 +42,16 @@ module.exports = co(function * () {
                 },
                 {
                     version: 1,
-                    $and: [
+                    'social.facebookId': {
+                        $exists: true,
+                        $type: 'string',
+                    },
+                    $or: [
                         { email: {
                             $type: 'string',
                         } },
-                        { 'social.facebookId': {
-                            $type: 'string',
+                        { meta: {
+                            $type: 'object',
                         } },
                         { 'meta.gender': {
                             $in: ['male', 'female'],
@@ -59,12 +67,16 @@ module.exports = co(function * () {
                 },
                 {
                     version: 1,
-                    $and: [
+                    'social.linkedInId': {
+                        $exists: true,
+                        $type: 'string',
+                    },
+                    $or: [
                         { email: {
                             $type: 'string',
                         } },
-                        { 'social.linkedInId': {
-                            $type: 'string',
+                        { meta: {
+                            $type: 'object',
                         } },
                         { 'meta.firstName': {
                             $type: 'string',

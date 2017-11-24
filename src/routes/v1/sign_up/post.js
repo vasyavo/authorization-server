@@ -39,13 +39,7 @@ async function signUp(req, res, next) {
         const newUser = await UserCollection.insertOne({
             email,
             password: encryptPassword(password),
-            meta: {
-                gender: meta.gender,
-                firstName: meta.firstName,
-                lastName: meta.lastName,
-                bio: meta.bio,
-                country: meta.country,
-            },
+            meta,
             version: 1,
         });
 
