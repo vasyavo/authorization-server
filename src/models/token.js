@@ -31,10 +31,6 @@ module.exports = co(function * () {
                             $exists: true,
                             $type: 'objectId',
                         } },
-                        { createdAt: {
-                            $exists: true,
-                            $type: 'date',
-                        } },
                     ],
                 },
             ],
