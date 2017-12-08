@@ -53,7 +53,7 @@ async function signIn(req, res, next) {
                 $in: tokenInfo.scope,
             },
             expiresIn: {
-                $lt: timestamp,
+                $gt: timestamp,
             },
         };
         const options = {
