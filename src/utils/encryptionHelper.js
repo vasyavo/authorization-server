@@ -10,7 +10,7 @@ const encryptPassword = (password) => {
 const genAccessToken = (expiration) => {
     const token = uuid.v4();
     const tokenHash = crypto.createHash('sha512').update(token).digest('hex');
-    const now = Math.floor(new Date() / 1000);
+    const now = Date.now();
     const expiresIn = now + expiration;
 
     return {
