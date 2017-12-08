@@ -40,7 +40,6 @@ async function signIn(req, res, next) {
             },
             {
                 $project: {
-                    userId: 1,
                     email: 1,
                 },
             }

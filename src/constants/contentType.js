@@ -1,5 +1,5 @@
 module.exports = {
-    USER: 'user',
-    CLIENT: 'client',
-    TOKEN: 'token',
+    USER: 'users',
+    CLIENT: 'clients',
+    TOKEN: 'tokens',
 };

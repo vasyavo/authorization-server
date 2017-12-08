@@ -43,7 +43,10 @@ async function refreshToken(req, res, next) {
                 accessToken,
                 refreshToken,
                 expiresIn,
+                version: 1,
             }
+        }, {
+            returnOriginal: false,
         });
 
         res.status(200).send({

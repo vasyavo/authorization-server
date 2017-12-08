@@ -1,7 +1,13 @@
+const co = require('co');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
 const express = require('express');
-const {websiteUrl, thirdParty: {facebook: config}} = require('../../../config/');
+const {
+    websiteUrl,
+    thirdParty: {
+        facebook: config,
+    },
+} = require('../../../config/');
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
 const queryString = require('querystring');
@@ -14,16 +20,12 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'email', 'gender', 'name'],
     enableProof: true,
 }, (accessToken, refreshToken, profile, cb) => {
-    (async () => {
-        const UserCollection = await UserConnection;
+    co(function * () {
+        const UserCollection = yield UserConnection;
 
         const data = (profile && profile._json) || {};
         const {
-            email,
-            first_name,
-            last_name,
-            gender,
-            id,
+            email, first_name, last_name, gender, id,
         } = data;
 
         if (!email) {
@@ -35,7 +37,7 @@ passport.use(new FacebookStrategy({
         }
 
         try {
-            const result = await UserCollection.findOneAndUpdate({
+            const result = yield UserCollection.findOneAndUpdate({
                 email,
             }, {
                 $set: {
@@ -44,14 +46,18 @@ passport.use(new FacebookStrategy({
                     'meta.lastName': last_name,
                     'meta.gender': gender,
                     'social.facebookId': id,
+                    version: 1,
                 },
-            }, {upsert: true});
+            }, {
+                upsert: true,
+                returnOriginal: false,
+            });
 
             cb(null, result && result.value && result.value.meta);
         } catch (error) {
             cb(error);
         }
-    })();
+    });
 }));
 
 const router = new express.Router();

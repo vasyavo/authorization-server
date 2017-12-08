@@ -28,7 +28,7 @@ config.mongodbUri = process.env.MONGODB_URI;
 config.webConcurrency = process.env.WEB_CONCURRENCY || 1;
 config.isMaster = cluster.isMaster;
 config.security = {
-    expiresIn: process.env.TOKEN_EXPIRES_IN || 8640,
+    expiresIn: process.env.TOKEN_EXPIRES_IN || 60 * 60 * 24 * 2 * 1000, // 2 days
 };
 
 config.raml = path.join(config.workingDirectory, 'raml/api.raml');

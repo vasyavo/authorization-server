@@ -1,95 +1,108 @@
+const co = require('co');
 const collectionName = require('../constants/contentType').USER;
 const connection = require('../utils/connection');
 
-module.exports = (async () => {
-    const db = await connection;
-    const collection = await db.createCollection(collectionName, {
+module.exports = co(function * () {
+    const db = yield connection;
+
+    const collection = yield db.createCollection(collectionName, {
         validator: {
-            $and: [{
-                email: {
-                    $and: [{
+            $or: [
+                {
+                    version: 1,
+                    email: {
                         $exists: true,
-                    }, {
                         $type: 'string',
-                    }],
-                },
-            }, {
-                password: {
-                    $or: [{
+                    },
+                    password: {
+                        $exists: true,
                         $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
+                    },
+                    $or: [
+                        { meta: {
+                            $type: 'object',
+                        } },
+                        { 'meta.gender': {
+                            $in: ['male', 'female'],
+                            $type: 'string',
+                        } },
+                        { 'meta.firstName': {
+                            $type: 'string',
+                        } },
+                        { 'meta.lastName': {
+                            $type: 'string',
+                        } },
+                        { 'meta.bio': {
+                            $type: 'string',
+                        } },
+                        { 'meta.country': {
+                            $type: 'string',
+                        } },
+                    ],
                 },
-            }, {
-                'meta.gender': {
-                    $or: [{
-                        $in: ['male', 'female'],
-                    }, {
-                        $exists: false,
-                    }],
-                },
-            }, {
-                'meta.firstName': {
-                    $or: [{
+                {
+                    version: 1,
+                    'social.facebookId': {
+                        $exists: true,
                         $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
+                    },
+                    $or: [
+                        { email: {
+                            $type: 'string',
+                        } },
+                        { meta: {
+                            $type: 'object',
+                        } },
+                        { 'meta.gender': {
+                            $in: ['male', 'female'],
+                            $type: 'string',
+                        } },
+                        { 'meta.firstName': {
+                            $type: 'string',
+                        } },
+                        { 'meta.lastName': {
+                            $type: 'string',
+                        } },
+                    ],
                 },
-            }, {
-                'meta.lastName': {
-                    $or: [{
+                {
+                    version: 1,
+                    'social.linkedInId': {
+                        $exists: true,
                         $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
+                    },
+                    $or: [
+                        { email: {
+                            $type: 'string',
+                        } },
+                        { meta: {
+                            $type: 'object',
+                        } },
+                        { 'meta.firstName': {
+                            $type: 'string',
+                        } },
+                        { 'meta.lastName': {
+                            $type: 'string',
+                        } },
+                        { 'meta.bio': {
+                            $type: 'string',
+                        } },
+                        { 'meta.country': {
+                            $type: 'string',
+                        } },
+                    ],
                 },
-            }, {
-                'social.facebookId': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                },
-            }, {
-                'meta.linkedInId': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                },
-            }, {
-                'meta.bio': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                },
-            }, {
-                'meta.country': {
-                    $or: [{
-                        $type: 'string',
-                    }, {
-                        $exists: false,
-                    }],
-                },
-            },
             ],
         },
-
         validationLevel: 'strict',
         validationAction: 'error',
     });
 
-    await collection.createIndex({
+    yield collection.createIndex({
         email: 1,
     }, {
         unique: true,
     });
 
     return collection;
-})();
+});

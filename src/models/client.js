@@ -5,34 +5,26 @@ module.exports = (async () => {
     const db = await connection;
     const collection = await db.createCollection(collectionName, {
         validator: {
-            $and: [{
-                clientId: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
+            $or: [
+                {
+                    version: 1,
+                    $and: [
+                        { clientId: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { clientSecret: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { name: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                    ],
                 },
-            }, {
-                clientSecret: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
-                },
-            }, {
-                name: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
-                },
-            },
             ],
         },
-
         validationLevel: 'strict',
         validationAction: 'error',
     });

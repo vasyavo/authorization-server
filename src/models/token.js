@@ -1,63 +1,48 @@
+const co = require('co');
 const collectionName = require('../constants/contentType').TOKEN;
 const connection = require('../utils/connection');
 
-module.exports = (async () => {
-    const db = await connection;
-    const collection = await db.createCollection(collectionName, {
+module.exports = co(function * () {
+    const db = yield connection;
+
+    const collection = yield db.createCollection(collectionName, {
         validator: {
-            $and: [{
-                accessToken: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
+            $or: [
+                {
+                    version: 1,
+                    $and: [
+                        { accessToken: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { refreshToken: {
+                            $exists: true,
+                            $type: 'string',
+                        } },
+                        { expiresIn: {
+                            $exists: true,
+                            $type: 'number',
+                        } },
+                        { 'scope.0': {
+                            $exists: true,
+                        } },
+                        { userId: {
+                            $exists: true,
+                            $type: 'objectId',
+                        } },
+                    ],
                 },
-            }, {
-                refreshToken: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'string',
-                    }],
-                },
-            }, {
-                expiresIn: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'number',
-                    }],
-                },
-            }, {
-                scope: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'array',
-                    }],
-                },
-            }, {
-                userId: {
-                    $and: [{
-                        $exists: true,
-                    }, {
-                        $type: 'objectId',
-                    }],
-                },
-            },
             ],
         },
-
         validationLevel: 'strict',
         validationAction: 'error',
     });
 
-    await collection.createIndex({
+    yield collection.createIndex({
         accessToken: 1,
     }, {
         unique: true,
     });
 
     return collection;
-})();
+});

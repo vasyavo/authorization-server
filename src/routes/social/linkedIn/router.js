@@ -1,7 +1,13 @@
+const co = require('co');
 const passport = require('passport');
-const {Strategy: LinkedInStrategy} = require('passport-linkedin-oauth2');
+const { Strategy: LinkedInStrategy } = require('passport-linkedin-oauth2');
 const express = require('express');
-const {websiteUrl, thirdParty: {linkedIn: config}} = require('../../../config/');
+const {
+    websiteUrl,
+    thirdParty: {
+        linkedIn: config,
+    },
+} = require('../../../config/');
 
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
@@ -14,8 +20,8 @@ passport.use(new LinkedInStrategy({
     callbackURL: config.callbackURL,
     scope: ['r_emailaddress', 'r_basicprofile'],
 }, (accessToken, refreshToken, profile, cb) => {
-    (async () => {
-        const UserCollection = await UserConnection;
+    co(function * () {
+        const UserCollection = yield UserConnection;
 
         const data = (profile && profile._json) || {};
         const {
@@ -38,22 +44,26 @@ passport.use(new LinkedInStrategy({
         }
 
         try {
-            const result = await UserCollection.findOneAndUpdate({email}, {
+            const result = yield UserCollection.findOneAndUpdate({ email }, {
                 $set: {
                     email,
                     'meta.firstName': firstName,
                     'meta.lastName': lastName,
                     'meta.bio': summary,
                     'meta.country': country,
-                    'social.linkedId': id,
+                    'social.linkedInId': id,
+                    version: 1,
                 },
-            }, {upsert: true});
+            }, {
+                upsert: true,
+                returnOriginal: false,
+            });
 
             cb(null, result && result.value && result.value.meta);
         } catch (error) {
             cb(error);
         }
-    })();
+    });
 }));
 
 const router = new express.Router();
