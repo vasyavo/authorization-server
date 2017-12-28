@@ -1,7 +1,8 @@
 const co = require('co');
 const passport = require('passport');
-const { Strategy: LinkedInStrategy } = require('passport-linkedin-oauth2');
+const {Strategy: LinkedInStrategy} = require('passport-linkedin-oauth2');
 const express = require('express');
+const _ = require('lodash');
 const {
     websiteUrl,
     thirdParty: {
@@ -12,15 +13,15 @@ const {
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
 const queryString = require('querystring');
-const _ = require('lodash');
 
 passport.use(new LinkedInStrategy({
     clientID: config.clientId,
     clientSecret: config.clientSecret,
     callbackURL: config.callbackURL,
     scope: ['r_emailaddress', 'r_basicprofile'],
+    state: true,
 }, (accessToken, refreshToken, profile, cb) => {
-    co(function * () {
+    co(function* () {
         const UserCollection = yield UserConnection;
 
         const data = (profile && profile._json) || {};
@@ -44,7 +45,7 @@ passport.use(new LinkedInStrategy({
         }
 
         try {
-            const result = yield UserCollection.findOneAndUpdate({ email }, {
+            const result = yield UserCollection.findOneAndUpdate({email}, {
                 $set: {
                     email,
                     'meta.firstName': firstName,
@@ -58,8 +59,9 @@ passport.use(new LinkedInStrategy({
                 upsert: true,
                 returnOriginal: false,
             });
+            const user = _.get(result, 'value.meta');
 
-            cb(null, result && result.value && result.value.meta);
+            cb(null, user);
         } catch (error) {
             cb(error);
         }
