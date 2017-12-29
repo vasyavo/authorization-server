@@ -2,17 +2,26 @@ const co = require('co');
 const passport = require('passport');
 const {Strategy: LinkedInStrategy} = require('passport-linkedin-oauth2');
 const express = require('express');
-const _ = require('lodash');
+const mongo = require('mongodb');
+const ObjectID = mongo.ObjectID;
+const {
+    genAccessToken,
+} = require('../../../utils/encryptionHelper');
 const {
     websiteUrl,
     thirdParty: {
         linkedIn: config,
     },
+    security: {
+        expiresIn: ttl,
+    },
 } = require('../../../config/');
 
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
+const TokenConnection = require('../../../models/token');
 const queryString = require('querystring');
+const _ = require('lodash');
 
 passport.use(new LinkedInStrategy({
     clientID: config.clientId,
@@ -59,8 +68,13 @@ passport.use(new LinkedInStrategy({
                 upsert: true,
                 returnOriginal: false,
             });
-            const user = _.get(result, 'value.meta');
-
+            const meta = _.get(result, 'value.meta');
+            const user = {
+                firstName: meta.firstName,
+                lastName: meta.lastName,
+                email,
+            };
+            user.user_id = _.get(result, 'value._id');
             cb(null, user);
         } catch (error) {
             cb(error);
@@ -78,23 +92,52 @@ router.get('/callback', passport.authenticate('linkedin', {
 }));
 
 router.get('/successRedirect', (req, res) => {
-    let user = req.user;
-    const dictionary = {
-        firstName: 'first_name',
-        lastName: 'last_name',
-    };
+    co(function* () {
+        const TokenCollection = yield TokenConnection;
+        let user = _.get(req, 'session.passport.user');
+        let scope;
+        if (req.header('x-oauth-scopes')) {
+            scope = req.header('x-oauth-scopes').split(',');
+        }
+        const dictionary = {
+            firstName: 'first_name',
+            lastName: 'last_name',
+        };
 
-    user = _.mapKeys(user, (value, key) => {
-        return dictionary[key] || key;
+        user = _.mapKeys(user, (value, key) => {
+            return dictionary[key] || key;
+        });
+
+        const {
+            hash: accessToken,
+            expiresIn,
+        } = genAccessToken(ttl);
+        const {
+            hash: refreshToken,
+        } = genAccessToken(ttl);
+
+        yield TokenCollection.insertOne({
+            accessToken,
+            refreshToken,
+            expiresIn,
+            scope,
+            userId: ObjectID(user.user_id),
+            version: 1,
+        });
+        user.token_info = JSON.stringify({
+            token_type: 'Bearer',
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            expires_in: expiresIn,
+        });
+
+        const queryStr = queryString.stringify(user);
+        res.redirect(`${websiteUrl}?${queryStr}`);
     });
-
-    const queryStr = queryString.stringify(user);
-
-    res.redirect(`${websiteUrl}?${queryStr}`);
 });
 
 router.get('/failureCallback', (req, res) => {
-    res.redirect(`${websiteUrl}?failureMessage`);
+    res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
 });
 
 module.exports = router;

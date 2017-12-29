@@ -7,11 +7,18 @@ const {
     thirdParty: {
         facebook: config,
     },
+    security: {
+        expiresIn: ttl,
+    },
 } = require('../../../config/');
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
+const TokenConnection = require('../../../models/token');
 const queryString = require('querystring');
 const _ = require('lodash');
+const {
+    genAccessToken,
+} = require('../../../utils/encryptionHelper');
 
 passport.use(new FacebookStrategy({
     clientID: config.clientId,
@@ -20,7 +27,7 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'email', 'gender', 'name'],
     enableProof: true,
 }, (accessToken, refreshToken, profile, cb) => {
-    co(function * () {
+    co(function* () {
         const UserCollection = yield UserConnection;
 
         const data = (profile && profile._json) || {};
@@ -53,7 +60,14 @@ passport.use(new FacebookStrategy({
                 returnOriginal: false,
             });
 
-            cb(null, result && result.value && result.value.meta);
+            const meta = _.get(result, 'value.meta');
+            const user = {
+                firstName: meta.firstName,
+                lastName: meta.lastName,
+                email,
+            };
+            user.user_id = _.get(result, 'value._id');
+            cb(null, user);
         } catch (error) {
             cb(error);
         }
@@ -70,23 +84,53 @@ router.get('/', passport.authenticate('facebook', {
 
 router.get('/callback', passport.authenticate('facebook', {failureRedirect: '/v1/oauth/facebook/failureCallback'}),
     (req, res) => {
-        let user = req.user;
-        const dictionary = {
-            firstName: 'first_name',
-            lastName: 'last_name',
-        };
+        co(function* () {
+            const TokenCollection = yield TokenConnection;
+            let user = req.user;
+            let scope;
+            if (req.header('x-oauth-scopes')) {
+                scope = req.header('x-oauth-scopes').split(',');
+            }
+            const dictionary = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+            };
 
-        user = _.mapKeys(user, (value, key) => {
-            return dictionary[key] || key;
+            user = _.mapKeys(user, (value, key) => {
+                return dictionary[key] || key;
+            });
+
+            const {
+                hash: accessToken,
+                expiresIn,
+            } = genAccessToken(ttl);
+            const {
+                hash: refreshToken,
+            } = genAccessToken(ttl);
+
+            yield TokenCollection.insertOne({
+                accessToken,
+                refreshToken,
+                expiresIn,
+                scope,
+                userId: user.user_id,
+                version: 1,
+            });
+            user.token_info = JSON.stringify({
+                token_type: 'Bearer',
+                access_token: accessToken,
+                refresh_token: refreshToken,
+                expires_in: expiresIn,
+            });
+            user.user_id = user.user_id.toString();
+            const queryStr = queryString.stringify(user);
+
+            res.redirect(`${websiteUrl}?${queryStr}`);
         });
-
-        const queryStr = queryString.stringify(user);
-
-        res.redirect(`${websiteUrl}?${queryStr}`);
     });
 
 router.get('/failureCallback', (req, res) => {
-    res.redirect(`${websiteUrl}?failureMessage=Can\'t sign in with Facebook`);
+    res.redirect(`${websiteUrl}?failureMessage=Can't sign in with Facebook`);
 });
 
 module.exports = router;
