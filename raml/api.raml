@@ -37,6 +37,36 @@ types:
         minLength: 6
         required: true
 
+resourceTypes:
+  socialSignIn:
+    get:
+      description: |
+        Use this endpoint to authenticate a user with a social provider.
+      responses:
+        302:
+          body:
+            example: "Social provider sign in form."
+  callback:
+    get:
+      description: |
+        It is redirecUrl that will redirect to successCallback or failureCallback endpoints.
+  successCallback:
+    get:
+      description: |
+        This endpoint is for success response from social provider. It will redirect user to your website with all required fields in queryString.
+      responses:
+        302:
+          body:
+            example: <<example>>
+  failureCallback:
+    get:
+      description: |
+        This endpoint is for failure response from social provider. It will redirect user to your website.
+      responses:
+        302:
+          body:
+            example: <<example>>
+
 /v1/oauth/token:
   post:
     description: |
@@ -80,24 +110,30 @@ types:
           example: !include v1/oauth/access_token/post/responses/401/example.json
 
 /v1/oauth/facebook:
-  get:
-    description: |
-      Use this endpoint to authenticate a user with a social provider. It will return a *302* redirect to the social provider Facebook.
-    responses:
-      302:
-        body:
-          example: "Social provider sign in form."
+  type: socialSignIn
+  /callback:
+    type: callback
+  /successCallback:
+    type:
+      successCallback:
+        example: "Your url will be like \"yourWebsite.com?\""
+  /failureCallback:
+    type:
+      failureCallback:
+        example: "Your url will be like \"yourWebsite.com?failureMessage=Can't sign in with Facebook\""
 
-
-/v1/oauth/facebook/callback:
-  get:
-    description: |
-      Use this endpoint to accept response from social provider. It will return a *200*.
-    responses:
-      200:
-        body:
-          example: "Social provider sign in form."
-
+/v1/oauth/linkedIn:
+  type: socialSignIn
+  /callback:
+    type: callback
+  /successCallback:
+    type:
+      successCallback:
+        example: "Your url will be like \"yourWebsite.com?\""
+  /failureCallback:
+    type:
+      failureCallback:
+        example: "Your url will be like \"yourWebsite.com?failureMessage=Can't sign in with LinkedIn\""
 
 /v1/oauth/refresh:
   post:

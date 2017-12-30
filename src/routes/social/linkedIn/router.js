@@ -18,6 +18,7 @@ const {
 } = require('../../../config/');
 
 const logger = require('../../../utils/logger');
+const generateError = require('../../../utils/errorGenerator');
 const UserConnection = require('../../../models/user');
 const TokenConnection = require('../../../models/token');
 const queryString = require('querystring');
@@ -31,7 +32,13 @@ passport.use(new LinkedInStrategy({
     state: true,
 }, (accessToken, refreshToken, profile, cb) => {
     co(function* () {
-        const UserCollection = yield UserConnection;
+        let UserCollection;
+        try {
+            UserCollection = yield UserConnection;
+        } catch (err) {
+            logger.error('Error occurred during connection to UserCollection', err);
+            return cb(err);
+        }
 
         const data = (profile && profile._json) || {};
         const {
@@ -50,11 +57,13 @@ passport.use(new LinkedInStrategy({
                 level: 'error',
                 message: 'Email field is required for LinkedIn account',
             });
-            return cb(new Error('Email is required field, so you must to set it up in your LinkedIn account'));
+            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account'));
         }
 
         try {
-            const result = yield UserCollection.findOneAndUpdate({email}, {
+            const result = yield UserCollection.findOneAndUpdate({
+                email,
+            }, {
                 $set: {
                     email,
                     'meta.firstName': firstName,
@@ -88,12 +97,18 @@ router.get('/', passport.authenticate('linkedin'));
 
 router.get('/callback', passport.authenticate('linkedin', {
     failureRedirect: '/v1/oauth/linkedIn/failureCallback',
-    successRedirect: '/v1/oauth/linkedIn/successRedirect',
+    successRedirect: '/v1/oauth/linkedIn/successCallback',
 }));
 
-router.get('/successRedirect', (req, res) => {
+router.get('/successCallback', (req, res) => {
     co(function* () {
-        const TokenCollection = yield TokenConnection;
+        let TokenCollection;
+        try {
+            TokenCollection = yield TokenConnection;
+        } catch (err) {
+            logger.error('Error occurred during connection to TokenCollection', err);
+            return res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
+        }
         let user = _.get(req, 'session.passport.user');
         let scope;
         if (req.header('x-oauth-scopes')) {
@@ -116,14 +131,19 @@ router.get('/successRedirect', (req, res) => {
             hash: refreshToken,
         } = genAccessToken(ttl);
 
-        yield TokenCollection.insertOne({
-            accessToken,
-            refreshToken,
-            expiresIn,
-            scope,
-            userId: ObjectID(user.user_id),
-            version: 1,
-        });
+        try {
+            yield TokenCollection.insertOne({
+                accessToken,
+                refreshToken,
+                expiresIn,
+                scope,
+                userId: ObjectID(user.user_id),
+                version: 1,
+            });
+        } catch (err) {
+            logger.error('Error occurred during creation token', err);
+            return res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
+        }
         user.token_info = JSON.stringify({
             token_type: 'Bearer',
             access_token: accessToken,
@@ -137,6 +157,7 @@ router.get('/successRedirect', (req, res) => {
 });
 
 router.get('/failureCallback', (req, res) => {
+    logger.error('Can\'t sign in with LinkedIn', generateError());
     res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
 });
 
