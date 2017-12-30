@@ -14,7 +14,7 @@ const {
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
 const TokenConnection = require('../../../models/token');
-const queryString = require('querystring');
+const qs = require('qs');
 const _ = require('lodash');
 const {
     genAccessToken,
@@ -116,22 +116,28 @@ router.get('/callback', passport.authenticate('facebook', {failureRedirect: '/v1
                 userId: user.user_id,
                 version: 1,
             });
-            user.token_info = JSON.stringify({
-                token_type: 'Bearer',
-                access_token: accessToken,
-                refresh_token: refreshToken,
-                expires_in: expiresIn,
-            });
-            user.user_id = user.user_id.toString();
 
-            const queryParams = queryString.stringify(user);
+            const queryParams = qs.stringify({
+                user_id: user.user_id.toString(),
+                first_name: user.firstName,
+                last_name: user.lastName,
+                email: user.email,
+                phone_number: user.phoneNumber,
+                country: user.country,
+                token_info: {
+                    token_type: 'Bearer',
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                    expires_in: expiresIn,
+                },
+            });
 
             res.redirect(`${callbackURLThirdParty}?${queryParams}`);
         });
     });
 
 router.get('/failureCallback', (req, res) => {
-    const queryParams = queryString.stringify({
+    const queryParams = qs.stringify({
         failure_message: 'Something went wrong',
     });
 
