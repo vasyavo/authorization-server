@@ -8,14 +8,14 @@ const {
     genAccessToken,
 } = require('../../../utils/encryptionHelper');
 const {
-    websiteUrl,
     thirdParty: {
         linkedIn: config,
+        callbackURLThirdParty,
     },
     security: {
         expiresIn: ttl,
     },
-} = require('../../../config/');
+} = require('../../../config');
 
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
@@ -131,13 +131,18 @@ router.get('/successRedirect', (req, res) => {
             expires_in: expiresIn,
         });
 
-        const queryStr = queryString.stringify(user);
-        res.redirect(`${websiteUrl}?${queryStr}`);
+        const queryParams = queryString.stringify(user);
+
+        res.redirect(`${callbackURLThirdParty}?${queryParams}`);
     });
 });
 
 router.get('/failureCallback', (req, res) => {
-    res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
+    const queryParams = queryString.stringify({
+        failure_message: 'Something went wrong',
+    });
+
+    res.redirect(`${callbackURLThirdParty}?${queryParams}`);
 });
 
 module.exports = router;

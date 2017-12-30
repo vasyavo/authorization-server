@@ -39,11 +39,13 @@ config.thirdParty = {
         clientId: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
         callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+        callbackURLThirdParty: process.env.FACEBOOK_CALLBACK_URL_THIRD_PARTY,
     },
     linkedIn: {
         clientId: process.env.LINKED_IN_APP_ID,
         clientSecret: process.env.LINKED_IN_APP_SECRET,
         callbackURL: process.env.LINKED_IN_CALLBACK_URL,
+        callbackURLThirdParty: process.env.LINKED_IN_CALLBACK_URL_THIRD_PARTY,
     },
 };
 

@@ -3,14 +3,14 @@ const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
 const express = require('express');
 const {
-    websiteUrl,
     thirdParty: {
         facebook: config,
+        callbackURLThirdParty,
     },
     security: {
         expiresIn: ttl,
     },
-} = require('../../../config/');
+} = require('../../../config');
 const logger = require('../../../utils/logger');
 const UserConnection = require('../../../models/user');
 const TokenConnection = require('../../../models/token');
@@ -123,14 +123,19 @@ router.get('/callback', passport.authenticate('facebook', {failureRedirect: '/v1
                 expires_in: expiresIn,
             });
             user.user_id = user.user_id.toString();
-            const queryStr = queryString.stringify(user);
 
-            res.redirect(`${websiteUrl}?${queryStr}`);
+            const queryParams = queryString.stringify(user);
+
+            res.redirect(`${callbackURLThirdParty}?${queryParams}`);
         });
     });
 
 router.get('/failureCallback', (req, res) => {
-    res.redirect(`${websiteUrl}?failureMessage=Can't sign in with Facebook`);
+    const queryParams = queryString.stringify({
+        failure_message: 'Something went wrong',
+    });
+
+    res.redirect(`${callbackURLThirdParty}?${queryParams}`);
 });
 
 module.exports = router;
