@@ -91,7 +91,7 @@ passport.use(new LinkedInStrategy({
 
 const router = new express.Router();
 
-router.get('/', passport.authenticate('linkedin'));
+router.get('/', require('./../../../utils/scopeQueryToHeader'), passport.authenticate('linkedin'));
 
 router.get('/callback', passport.authenticate('linkedin', {
     failureRedirect: '/v1/oauth/linkedIn/failureCallback',

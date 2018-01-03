@@ -82,7 +82,7 @@ passport.use(new FacebookStrategy({
 
 const router = new express.Router();
 
-router.get('/', passport.authenticate('facebook', {
+router.get('/', require('./../../../utils/scopeQueryToHeader'), passport.authenticate('facebook', {
     authType: 'rerequest',
     scope: ['public_profile', 'email'],
     return_scopes: true,
