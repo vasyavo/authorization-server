@@ -10,7 +10,9 @@ const {
 const {
     thirdParty: {
         linkedIn: config,
-        callbackURLThirdParty,
+        linkedIn: {
+            callbackURLThirdParty,
+        },
     },
     security: {
         expiresIn: ttl,
@@ -37,7 +39,7 @@ passport.use(new LinkedInStrategy({
         } catch (err) {
             const message = 'Error occurred during connection to UserCollection';
             logger.error(message, err);
-            return cb(generateError(message, null, true));
+            return cb(generateError(message, null, callbackURLThirdParty));
         }
 
         const data = (profile && profile._json) || {};
@@ -53,7 +55,7 @@ passport.use(new LinkedInStrategy({
         } = data;
 
         if (!email) {
-            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account', null, true));
+            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account', null, callbackURLThirdParty));
         }
 
         try {
@@ -84,7 +86,7 @@ passport.use(new LinkedInStrategy({
         } catch (error) {
             const message = 'Error occurred during creation User by LinkedIn';
             logger.error(message, error);
-            cb(generateError(message, null, true));
+            cb(generateError(message, null, callbackURLThirdParty));
         }
     });
 }));
