@@ -1,5 +1,5 @@
 const logger = require('./logger');
-const config = require('../config/');
+const qs = require('qs');
 
 module.exports = (err, req, res, next) => {
     const {
@@ -8,15 +8,18 @@ module.exports = (err, req, res, next) => {
         message = 'unhandled_error',
         requestErrors = [],
         description,
-        redirect,
+        redirectUrl,
     } = err;
     const {
         id: requestId,
     } = req;
 
-    if (redirect) {
+    if (redirectUrl) {
+        const queryParams = qs.stringify({
+            failure_message: 'Something went wrong',
+        });
         logger.error(`${message}. Stack trace: ${stackTrace}`);
-        return res.redirect(`${config.websiteUrl}?failureMessage=${message}`);
+        return res.redirect(`${redirectUrl}?${queryParams}`);
     }
 
     const body = {

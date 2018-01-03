@@ -7,7 +7,9 @@ const ObjectID = mongo.ObjectID;
 const {
     thirdParty: {
         facebook: config,
-        callbackURLThirdParty,
+        facebook: {
+            callbackURLThirdParty,
+        },
     },
     security: {
         expiresIn: ttl,
@@ -37,14 +39,14 @@ passport.use(new FacebookStrategy({
         } catch (err) {
             const message = 'Error occurred during connection to UserCollection';
             logger.error(message, err);
-            return cb(generateError(message, null, true));
+            return cb(generateError(message, null, callbackURLThirdParty));
         }
         const data = (profile && profile._json) || {};
         const {
             email, first_name, last_name, gender, id,
         } = data;
         if (!email) {
-            return cb(generateError('Email is required field, so you must to set it up in your Facebook account', null, true));
+            return cb(generateError('Email is required field, so you must to set it up in your Facebook account', null, callbackURLThirdParty));
         }
 
         try {
@@ -75,7 +77,7 @@ passport.use(new FacebookStrategy({
         } catch (error) {
             const message = 'Error occurred during creation User by Facebook';
             logger.error(message, error);
-            cb(generateError(message, null, true));
+            cb(generateError(message, null, callbackURLThirdParty));
         }
     });
 }));
