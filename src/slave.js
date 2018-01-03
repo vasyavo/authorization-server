@@ -47,7 +47,7 @@ co(function* () {
             mockService,
         } = yield* osprey();
 
-        // app.use(middleware);
+        app.use(middleware);
         app.post('/v1/sign_up', require('./routes/v1/sign_up/post'));
         app.post('/v1/oauth/refresh', require('./handlers/user/refreshToken'));
         app.post('/v1/oauth/revoke', require('./handlers/user/revokeToken'));

@@ -18,6 +18,7 @@ const {
 } = require('../../../config');
 
 const logger = require('../../../utils/logger');
+const generateError = require('../../../utils/errorGenerator');
 const UserConnection = require('../../../models/user');
 const TokenConnection = require('../../../models/token');
 const qs = require('qs');
@@ -28,10 +29,16 @@ passport.use(new LinkedInStrategy({
     clientSecret: config.clientSecret,
     callbackURL: config.callbackURL,
     scope: ['r_emailaddress', 'r_basicprofile'],
-    state: true,
 }, (accessToken, refreshToken, profile, cb) => {
     co(function* () {
-        const UserCollection = yield UserConnection;
+        let UserCollection;
+        try {
+            UserCollection = yield UserConnection;
+        } catch (err) {
+            const message = 'Error occurred during connection to UserCollection';
+            logger.error(message, err);
+            return cb(generateError(message, null, true));
+        }
 
         const data = (profile && profile._json) || {};
         const {
@@ -46,15 +53,13 @@ passport.use(new LinkedInStrategy({
         } = data;
 
         if (!email) {
-            logger.log({
-                level: 'error',
-                message: 'Email field is required for LinkedIn account',
-            });
-            return cb(new Error('Email is required field, so you must to set it up in your LinkedIn account'));
+            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account', null, true));
         }
 
         try {
-            const result = yield UserCollection.findOneAndUpdate({email}, {
+            const result = yield UserCollection.findOneAndUpdate({
+                email,
+            }, {
                 $set: {
                     email,
                     'meta.firstName': firstName,
@@ -77,7 +82,9 @@ passport.use(new LinkedInStrategy({
             user.user_id = _.get(result, 'value._id');
             cb(null, user);
         } catch (error) {
-            cb(error);
+            const message = 'Error occurred during creation User by LinkedIn';
+            logger.error(message, error);
+            cb(generateError(message, null, true));
         }
     });
 }));
@@ -88,12 +95,22 @@ router.get('/', passport.authenticate('linkedin'));
 
 router.get('/callback', passport.authenticate('linkedin', {
     failureRedirect: '/v1/oauth/linkedIn/failureCallback',
-    successRedirect: '/v1/oauth/linkedIn/successRedirect',
+    successRedirect: '/v1/oauth/linkedIn/successCallback',
 }));
 
-router.get('/successRedirect', (req, res) => {
+router.get('/successCallback', (req, res) => {
     co(function* () {
-        const TokenCollection = yield TokenConnection;
+        let TokenCollection;
+        try {
+            TokenCollection = yield TokenConnection;
+        } catch (err) {
+            logger.error('Error occurred during connection to TokenCollection', err);
+            const queryParams = qs.stringify({
+                failure_message: 'Something went wrong',
+            });
+
+            return res.redirect(`${callbackURLThirdParty}?${queryParams}`);
+        }
         let user = _.get(req, 'session.passport.user');
         let scope;
         if (req.header('x-oauth-scopes')) {
@@ -116,14 +133,23 @@ router.get('/successRedirect', (req, res) => {
             hash: refreshToken,
         } = genAccessToken(ttl);
 
-        yield TokenCollection.insertOne({
-            accessToken,
-            refreshToken,
-            expiresIn,
-            scope,
-            userId: ObjectID(user.user_id),
-            version: 1,
-        });
+        try {
+            yield TokenCollection.insertOne({
+                accessToken,
+                refreshToken,
+                expiresIn,
+                scope,
+                userId: ObjectID(user.user_id),
+                version: 1,
+            });
+        } catch (err) {
+            logger.error('Error occurred during creation token', err);
+            const queryParams = qs.stringify({
+                failure_message: 'Something went wrong',
+            });
+
+            return res.redirect(`${callbackURLThirdParty}?${queryParams}`);
+        }
 
         const queryParams = qs.stringify({
             user_id: user.user_id.toString(),
