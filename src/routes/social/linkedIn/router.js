@@ -8,20 +8,22 @@ const {
     genAccessToken,
 } = require('../../../utils/encryptionHelper');
 const {
-    websiteUrl,
     thirdParty: {
         linkedIn: config,
+        linkedIn: {
+            callbackURLThirdParty,
+        },
     },
     security: {
         expiresIn: ttl,
     },
-} = require('../../../config/');
+} = require('../../../config');
 
 const logger = require('../../../utils/logger');
 const generateError = require('../../../utils/errorGenerator');
 const UserConnection = require('../../../models/user');
 const TokenConnection = require('../../../models/token');
-const queryString = require('querystring');
+const qs = require('qs');
 const _ = require('lodash');
 
 passport.use(new LinkedInStrategy({
@@ -37,7 +39,7 @@ passport.use(new LinkedInStrategy({
         } catch (err) {
             const message = 'Error occurred during connection to UserCollection';
             logger.error(message, err);
-            return cb(generateError(message, null, true));
+            return cb(generateError(message, null, callbackURLThirdParty));
         }
 
         const data = (profile && profile._json) || {};
@@ -53,7 +55,7 @@ passport.use(new LinkedInStrategy({
         } = data;
 
         if (!email) {
-            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account', null, true));
+            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account', null, callbackURLThirdParty));
         }
 
         try {
@@ -84,7 +86,7 @@ passport.use(new LinkedInStrategy({
         } catch (error) {
             const message = 'Error occurred during creation User by LinkedIn';
             logger.error(message, error);
-            cb(generateError(message, null, true));
+            cb(generateError(message, null, callbackURLThirdParty));
         }
     });
 }));
@@ -105,7 +107,11 @@ router.get('/successCallback', (req, res) => {
             TokenCollection = yield TokenConnection;
         } catch (err) {
             logger.error('Error occurred during connection to TokenCollection', err);
-            return res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
+            const queryParams = qs.stringify({
+                failure_message: 'Something went wrong',
+            });
+
+            return res.redirect(`${callbackURLThirdParty}?${queryParams}`);
         }
         let user = _.get(req, 'session.passport.user');
         let scope;
@@ -140,24 +146,38 @@ router.get('/successCallback', (req, res) => {
             });
         } catch (err) {
             logger.error('Error occurred during creation token', err);
-            return res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
+            const queryParams = qs.stringify({
+                failure_message: 'Something went wrong',
+            });
+
+            return res.redirect(`${callbackURLThirdParty}?${queryParams}`);
         }
-        user.token_info = JSON.stringify({
-            token_type: 'Bearer',
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            expires_in: expiresIn,
+
+        const queryParams = qs.stringify({
+            user_id: user.user_id.toString(),
+            first_name: user.firstName,
+            last_name: user.lastName,
+            email: user.email,
+            phone_number: user.phoneNumber,
+            country: user.country,
+            token_info: {
+                token_type: 'Bearer',
+                access_token: accessToken,
+                refresh_token: refreshToken,
+                expires_in: expiresIn,
+            },
         });
 
-        const queryStr = queryString.stringify(user);
-        res.redirect(`${websiteUrl}?${queryStr}`);
+        res.redirect(`${callbackURLThirdParty}?${queryParams}`);
     });
 });
 
 router.get('/failureCallback', (req, res) => {
+    const queryParams = qs.stringify({
+        failure_message: 'Something went wrong',
+    });
 
-
-    res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
+    res.redirect(`${callbackURLThirdParty}?${queryParams}`);
 });
 
 module.exports = router;
