@@ -29,15 +29,15 @@ passport.use(new LinkedInStrategy({
     clientSecret: config.clientSecret,
     callbackURL: config.callbackURL,
     scope: ['r_emailaddress', 'r_basicprofile'],
-    state: true,
 }, (accessToken, refreshToken, profile, cb) => {
     co(function* () {
         let UserCollection;
         try {
             UserCollection = yield UserConnection;
         } catch (err) {
-            logger.error('Error occurred during connection to UserCollection', err);
-            return cb(err);
+            const message = 'Error occurred during connection to UserCollection';
+            logger.error(message, err);
+            return cb(generateError(message, null, true));
         }
 
         const data = (profile && profile._json) || {};
@@ -53,11 +53,7 @@ passport.use(new LinkedInStrategy({
         } = data;
 
         if (!email) {
-            logger.log({
-                level: 'error',
-                message: 'Email field is required for LinkedIn account',
-            });
-            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account'));
+            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account', null, true));
         }
 
         try {
@@ -86,7 +82,9 @@ passport.use(new LinkedInStrategy({
             user.user_id = _.get(result, 'value._id');
             cb(null, user);
         } catch (error) {
-            cb(error);
+            const message = 'Error occurred during creation User by LinkedIn';
+            logger.error(message, error);
+            cb(generateError(message, null, true));
         }
     });
 }));
@@ -157,7 +155,8 @@ router.get('/successCallback', (req, res) => {
 });
 
 router.get('/failureCallback', (req, res) => {
-    logger.error('Can\'t sign in with LinkedIn', generateError());
+
+
     res.redirect(`${websiteUrl}?failureMessage=Can't sign in with LinkedIn`);
 });
 

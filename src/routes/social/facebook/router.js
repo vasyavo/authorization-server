@@ -2,6 +2,8 @@ const co = require('co');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
 const express = require('express');
+const mongo = require('mongodb');
+const ObjectID = mongo.ObjectID;
 const {
     websiteUrl,
     thirdParty: {
@@ -33,20 +35,16 @@ passport.use(new FacebookStrategy({
         try {
             UserCollection = yield UserConnection;
         } catch (err) {
-            logger.error('Error occurred during connection to UserCollection', err);
-            return cb(err);
+            const message = 'Error occurred during connection to UserCollection';
+            logger.error(message, err);
+            return cb(generateError(message, null, true));
         }
         const data = (profile && profile._json) || {};
         const {
             email, first_name, last_name, gender, id,
         } = data;
-
         if (!email) {
-            logger.log({
-                level: 'error',
-                message: 'Email field is required for Facebook account',
-            });
-            return cb(generateError('Email is required field, so you must to set it up in your Facebook account'));
+            return cb(generateError('Email is required field, so you must to set it up in your Facebook account', null, true));
         }
 
         try {
@@ -75,7 +73,9 @@ passport.use(new FacebookStrategy({
             user.user_id = _.get(result, 'value._id');
             cb(null, user);
         } catch (error) {
-            cb(error);
+            const message = 'Error occurred during creation User by Facebook';
+            logger.error(message, error);
+            cb(generateError(message, null, true));
         }
     });
 }));
@@ -102,7 +102,7 @@ router.get('/successCallback', (req, res) => {
             logger.error('Error occurred during connection to TokenCollection', err);
             return res.redirect(`${websiteUrl}?failureMessage=Can't sign in with Facebook`);
         }
-        let user = req.user;
+        let user = _.get(req, 'session.passport.user');
         let scope;
         if (req.header('x-oauth-scopes')) {
             scope = req.header('x-oauth-scopes').split(',');
@@ -130,7 +130,7 @@ router.get('/successCallback', (req, res) => {
                 refreshToken,
                 expiresIn,
                 scope,
-                userId: user.user_id,
+                userId: ObjectID(user.user_id),
                 version: 1,
             });
         } catch (err) {
@@ -144,7 +144,6 @@ router.get('/successCallback', (req, res) => {
             refresh_token: refreshToken,
             expires_in: expiresIn,
         });
-        user.user_id = user.user_id.toString();
         const queryStr = queryString.stringify(user);
 
         res.redirect(`${websiteUrl}?${queryStr}`);
@@ -152,7 +151,6 @@ router.get('/successCallback', (req, res) => {
 });
 
 router.get('/failureCallback', (req, res) => {
-    logger.error('Error occurred during creation token', err);
     res.redirect(`${websiteUrl}?failureMessage=Can't sign in with Facebook`);
 });
 

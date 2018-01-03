@@ -1,4 +1,5 @@
 const logger = require('./logger');
+const config = require('../config/');
 
 module.exports = (err, req, res, next) => {
     const {
@@ -7,8 +8,16 @@ module.exports = (err, req, res, next) => {
         message = 'unhandled_error',
         requestErrors = [],
         description,
+        redirect,
     } = err;
-    const { id: requestId } = req;
+    const {
+        id: requestId,
+    } = req;
+
+    if (redirect) {
+        logger.error(`${message}. Stack trace: ${stackTrace}`);
+        return res.redirect(`${config.websiteUrl}?failureMessage=${message}`);
+    }
 
     const body = {
         requestId,

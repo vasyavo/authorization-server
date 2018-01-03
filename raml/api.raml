@@ -37,11 +37,22 @@ types:
         minLength: 6
         required: true
 
+traits:
+  scopeHeader:
+    headers:
+      X-OAuth-Scopes:
+        description: |
+          This is scope header for access
+        required: true
+        example: articles:read,my_profile
+
 resourceTypes:
   socialSignIn:
+    description: This is ResourceType for social signing in
     get:
       description: |
         Use this endpoint to authenticate a user with a social provider.
+      is: [scopeHeader]
       responses:
         302:
           body:
@@ -50,10 +61,15 @@ resourceTypes:
     get:
       description: |
         It is redirecUrl that will redirect to successCallback or failureCallback endpoints.
+      queryParameters:
+        code:
+          type: string
+          required: true
   successCallback:
     get:
       description: |
         This endpoint is for success response from social provider. It will redirect user to your website with all required fields in queryString.
+      is: [scopeHeader]
       responses:
         302:
           body:
@@ -116,7 +132,7 @@ resourceTypes:
   /successCallback:
     type:
       successCallback:
-        example: "Your url will be like \"yourWebsite.com?\""
+        example: "Your url will be like \"yourWebsite.com?...\""
   /failureCallback:
     type:
       failureCallback:
@@ -129,7 +145,7 @@ resourceTypes:
   /successCallback:
     type:
       successCallback:
-        example: "Your url will be like \"yourWebsite.com?\""
+        example: "Your url will be like \"yourWebsite.com?...\""
   /failureCallback:
     type:
       failureCallback:
