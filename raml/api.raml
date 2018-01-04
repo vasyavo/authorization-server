@@ -52,7 +52,6 @@ resourceTypes:
     get:
       description: |
         Use this endpoint to authenticate a user with a social provider.
-      is: [scopeHeader]
       responses:
         302:
           body:
@@ -69,7 +68,6 @@ resourceTypes:
     get:
       description: |
         This endpoint is for success response from social provider. It will redirect user to your website with all required fields in queryString.
-      is: [scopeHeader]
       responses:
         302:
           body:

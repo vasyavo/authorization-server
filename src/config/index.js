@@ -49,6 +49,7 @@ config.thirdParty = {
     },
 };
 
+config.xOauthScopes = process.env.X_OAUTH_SCOPES;
 config.websiteUrl = process.env.WEBSITE_URL;
 
 // import this file at begin of server.js
