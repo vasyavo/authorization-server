@@ -17,6 +17,7 @@ const {
     security: {
         expiresIn: ttl,
     },
+    xOauthScopes,
 } = require('../../../config');
 
 const logger = require('../../../utils/logger');
@@ -114,7 +115,7 @@ router.get('/successCallback', (req, res) => {
             return res.redirect(`${callbackURLThirdParty}?${queryParams}`);
         }
         let user = _.get(req, 'session.passport.user');
-        let scope;
+        let scope = xOauthScopes && xOauthScopes.split(',');
         if (req.header('x-oauth-scopes')) {
             scope = req.header('x-oauth-scopes').split(',');
         }
