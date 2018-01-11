@@ -55,13 +55,9 @@ passport.use(new LinkedInStrategy({
             },
         } = data;
 
-        if (!email) {
-            return cb(generateError('Email is required field, so you must to set it up in your LinkedIn account', null, callbackURLThirdParty));
-        }
-
         try {
             const result = yield UserCollection.findOneAndUpdate({
-                email,
+                'social.linkedInId': id,
             }, {
                 $set: {
                     email,
@@ -69,7 +65,6 @@ passport.use(new LinkedInStrategy({
                     'meta.lastName': lastName,
                     'meta.bio': summary,
                     'meta.country': country,
-                    'social.linkedInId': id,
                     version: 1,
                 },
             }, {

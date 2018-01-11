@@ -100,8 +100,6 @@ module.exports = co(function * () {
 
     yield collection.createIndex({
         email: 1,
-    }, {
-        unique: true,
     });
 
     return collection;

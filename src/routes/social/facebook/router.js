@@ -46,20 +46,16 @@ passport.use(new FacebookStrategy({
         const {
             email, first_name, last_name, gender, id,
         } = data;
-        if (!email) {
-            return cb(generateError('Email is required field, so you must to set it up in your Facebook account', null, callbackURLThirdParty));
-        }
 
         try {
             const result = yield UserCollection.findOneAndUpdate({
-                email,
+                'social.facebookId': id,
             }, {
                 $set: {
                     email,
                     'meta.firstName': first_name,
                     'meta.lastName': last_name,
                     'meta.gender': gender,
-                    'social.facebookId': id,
                     version: 1,
                 },
             }, {
