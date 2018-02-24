@@ -5,7 +5,7 @@ module.exports = (async () => {
     const db = await connection;
     const collection = await db.createCollection(collectionName);
 
-    yield db.command({
+    await db.command({
         collMod: collectionName,
         validator: {
             $or: [
@@ -16,19 +16,19 @@ module.exports = (async () => {
                             clientId: {
                                 $exists: true,
                                 $type: 'string',
-                            }
+                            },
                         },
                         {
                             clientSecret: {
                                 $exists: true,
                                 $type: 'string',
-                            }
+                            },
                         },
                         {
                             name: {
                                 $exists: true,
                                 $type: 'string',
-                            }
+                            },
                         },
                     ],
                 },
