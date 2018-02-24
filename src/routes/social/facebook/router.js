@@ -33,7 +33,7 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'email', 'gender', 'name'],
     enableProof: true,
 }, (accessToken, refreshToken, profile, cb) => {
-    co(function* () {
+    co(function * () {
         let UserCollection;
         try {
             UserCollection = yield UserConnection;
@@ -93,7 +93,7 @@ router.get('/callback', passport.authenticate('facebook', {
 }));
 
 router.get('/successCallback', (req, res) => {
-    co(function* () {
+    co(function * () {
         let TokenCollection;
         try {
             TokenCollection = yield TokenConnection;

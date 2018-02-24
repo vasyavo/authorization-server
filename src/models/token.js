@@ -5,7 +5,9 @@ const connection = require('../utils/connection');
 module.exports = co(function * () {
     const db = yield connection;
 
-    const collection = yield db.createCollection(collectionName, {
+    const collection = yield db.createCollection(collectionName);
+    yield db.command({
+        collMod: collectionName,
         validator: {
             $or: [
                 {

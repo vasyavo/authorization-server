@@ -1,6 +1,6 @@
 const co = require('co');
 const passport = require('passport');
-const {Strategy: LinkedInStrategy} = require('passport-linkedin-oauth2');
+const { Strategy: LinkedInStrategy } = require('passport-linkedin-oauth2');
 const express = require('express');
 const mongo = require('mongodb');
 const ObjectID = mongo.ObjectID;
@@ -33,7 +33,7 @@ passport.use(new LinkedInStrategy({
     callbackURL: config.callbackURL,
     scope: ['r_emailaddress', 'r_basicprofile'],
 }, (accessToken, refreshToken, profile, cb) => {
-    co(function* () {
+    co(function * () {
         let UserCollection;
         try {
             UserCollection = yield UserConnection;
@@ -97,7 +97,7 @@ router.get('/callback', passport.authenticate('linkedin', {
 }));
 
 router.get('/successCallback', (req, res) => {
-    co(function* () {
+    co(function * () {
         let TokenCollection;
         try {
             TokenCollection = yield TokenConnection;

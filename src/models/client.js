@@ -3,24 +3,33 @@ const connection = require('../utils/connection');
 
 module.exports = (async () => {
     const db = await connection;
-    const collection = await db.createCollection(collectionName, {
+    const collection = await db.createCollection(collectionName);
+
+    yield db.command({
+        collMod: collectionName,
         validator: {
             $or: [
                 {
                     version: 1,
                     $and: [
-                        { clientId: {
-                            $exists: true,
-                            $type: 'string',
-                        } },
-                        { clientSecret: {
-                            $exists: true,
-                            $type: 'string',
-                        } },
-                        { name: {
-                            $exists: true,
-                            $type: 'string',
-                        } },
+                        {
+                            clientId: {
+                                $exists: true,
+                                $type: 'string',
+                            }
+                        },
+                        {
+                            clientSecret: {
+                                $exists: true,
+                                $type: 'string',
+                            }
+                        },
+                        {
+                            name: {
+                                $exists: true,
+                                $type: 'string',
+                            }
+                        },
                     ],
                 },
             ],

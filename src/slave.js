@@ -20,7 +20,7 @@ process.on('uncaughtException', (error) => {
 
 const app = express();
 
-co(function* () {
+co(function * () {
     app.use(addRequestId);
     app.use(compress());
     app.use(session({
@@ -37,7 +37,7 @@ co(function* () {
     app.use(passport.initialize());
 
     app.disable('x-powered-by');
-    app.use(bodyParser.json({extended: true}));
+    app.use(bodyParser.json({ extended: true }));
 
     app.get('/v1/api', require('./utils/sendRamlDoc'));
 

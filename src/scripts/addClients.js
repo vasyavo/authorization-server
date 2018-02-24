@@ -2,8 +2,8 @@ const contentType = require('../constants/contentType');
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/weltou';
 const clients = [{
-    name        : 'Weltou',
-    clientId    : '5a02e8121652c75396dd33ad',
+    name: 'Weltou',
+    clientId: '5a02e8121652c75396dd33ad',
     clientSecret: '5a02ea4e1652c75396dd33ae',
 }];
 
@@ -16,7 +16,7 @@ const errorHandler = (e) => {
 
 (async () => {
     try {
-        db = await  MongoClient.connect(url);
+        db = await MongoClient.connect(url);
         Clients = db.collection(contentType.CLIENT);
     } catch (e) {
         errorHandler(e);
