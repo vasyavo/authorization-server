@@ -114,14 +114,6 @@ router.get('/successCallback', (req, res) => {
         if (req.header('x-oauth-scopes')) {
             scope = req.header('x-oauth-scopes').split(',');
         }
-        const dictionary = {
-            firstName: 'first_name',
-            lastName: 'last_name',
-        };
-
-        user = _.mapKeys(user, (value, key) => {
-            return dictionary[key] || key;
-        });
 
         const {
             hash: accessToken,
