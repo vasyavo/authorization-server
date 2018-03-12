@@ -34,8 +34,7 @@
   ],
   "pre-push": [
     "lint",
-    "test",
-    "coverage"
+    "test"
   ],
   "dependencies": {
     "body-parser": "^1.18.2",
