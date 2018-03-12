@@ -13,25 +13,35 @@ module.exports = co(function * () {
                 {
                     version: 1,
                     $and: [
-                        { accessToken: {
-                            $exists: true,
-                            $type: 'string',
-                        } },
-                        { refreshToken: {
-                            $exists: true,
-                            $type: 'string',
-                        } },
-                        { expiresIn: {
-                            $exists: true,
-                            $type: 'number',
-                        } },
-                        { 'scope.0': {
-                            $exists: true,
-                        } },
-                        { userId: {
-                            $exists: true,
-                            $type: 'objectId',
-                        } },
+                        {
+                            accessToken: {
+                                $exists: true,
+                                $type: 'string',
+                            },
+                        },
+                        {
+                            refreshToken: {
+                                $exists: true,
+                                $type: 'string',
+                            },
+                        },
+                        {
+                            expiresIn: {
+                                $exists: true,
+                                $type: 'number',
+                            },
+                        },
+                        {
+                            'scope.0': {
+                                $exists: true,
+                            },
+                        },
+                        {
+                            userId: {
+                                $exists: true,
+                                $type: 'objectId',
+                            },
+                        },
                     ],
                 },
             ],

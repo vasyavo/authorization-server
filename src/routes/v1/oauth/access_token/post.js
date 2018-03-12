@@ -2,13 +2,12 @@ const ClientConnection = require('../../../../models/client');
 const TokenConnection = require('../../../../models/token');
 const generateError = require('../../../../utils/errorGenerator');
 const {
-    encryptPassword,
     genAccessToken,
 } = require('../../../../utils/encryptionHelper');
 const ttl = require('../../../../config').security.expiresIn;
 
 async function signIn(req, res, next) {
-    const body = req.body;
+    const { body } = req;
 
     const ClientCollection = await ClientConnection;
     const TokenCollection = await TokenConnection;
@@ -70,7 +69,7 @@ async function signIn(req, res, next) {
                 accessToken,
                 refreshToken,
                 expiresIn,
-            }
+            },
         }, options);
 
         if (!result.value) {

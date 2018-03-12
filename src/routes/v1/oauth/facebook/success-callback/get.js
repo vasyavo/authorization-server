@@ -4,7 +4,7 @@ const mongodb = require('mongodb');
 
 const {
     genAccessToken,
-} = require('../../../../utils/encryptionHelper');
+} = require('../../../../../utils/encryptionHelper');
 const {
     thirdParty: {
         facebook: {
@@ -15,15 +15,16 @@ const {
         expiresIn: ttl,
     },
     xOauthScopes,
-} = require('../../../../config');
+} = require('../../../../../config');
 
-const ObjectID = mongodb.ObjectID;
+const { ObjectID } = mongodb;
 
-const logger = require('../../../../utils/logger');
-const TokenCollectionPromise = require('../../../../models/token');
+const logger = require('../../../../../utils/logger');
+const TokenCollectionPromise = require('../../../../../models/token');
 
+// eslint-disable-next-line no-unused-vars
 module.exports = async (req, res, next) => {
-    let user = _.get(req, 'session.passport.user');
+    const user = _.get(req, 'session.passport.user');
     let scope = xOauthScopes && xOauthScopes.split(',');
     if (req.header('x-oauth-scopes')) {
         scope = req.header('x-oauth-scopes').split(',');

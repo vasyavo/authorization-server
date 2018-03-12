@@ -6,10 +6,10 @@ async function refreshToken(req, res, next) {
     const ClientCollection = await ClientConnection;
     const TokenCollection = await TokenConnection;
 
-    const {client_id: clientId, client_secret: clientSecret, token: refreshToken,} = req.body;
+    const { client_id: clientId, client_secret: clientSecret, token: refreshToken } = req.body;
 
     try {
-        const client = await ClientCollection.findOne({clientId, clientSecret});
+        const client = await ClientCollection.findOne({ clientId, clientSecret });
 
         if (!client) {
             return next(generateError('You can\'t revoke tokens through your application'));
@@ -26,7 +26,6 @@ async function refreshToken(req, res, next) {
         if (!token) {
             return next(generateError('Token with such refresh token doesn\'t exist'));
         }
-
     } catch (e) {
         return next(e);
     }

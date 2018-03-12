@@ -59,7 +59,7 @@ module.exports = new LinkedInStrategy({
                 firstName: meta.firstName,
                 lastName: meta.lastName,
                 email,
-                user_id: _.get(result, 'value._id')
+                user_id: _.get(result, 'value._id'),
             };
         } catch (error) {
             logger.error('Error occurred during authorization using LinkedIn strategy', error);

@@ -39,12 +39,12 @@ co(function * () {
     app.disable('x-powered-by');
     app.use(bodyParser.json({ extended: true }));
 
+    /* eslint-disable global-require */
     app.get('/v1/api', require('./utils/sendRamlDoc'));
 
     {
         const {
             middleware,
-            mockService,
         } = yield* osprey();
 
         app.use(middleware);
@@ -67,6 +67,7 @@ co(function * () {
 
     app.use(require('./utils/notFound'));
     app.use(require('./utils/errorHandler'));
+    /* eslint-enable global-require */
 
     app.listen(config.port, () => {
         logger.info(`Server started at port ${config.port} in ${config.env} environment:`, config);

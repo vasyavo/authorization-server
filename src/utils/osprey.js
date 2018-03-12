@@ -1,7 +1,7 @@
 const osprey = require('osprey');
 const ramlParser = require('raml-1-parser');
 const mockService = require('osprey-mock-service');
-const compose = require('compose-middleware').compose;
+const { compose } = require('compose-middleware');
 const config = require('./../config');
 
 const ospreyConfig = {
@@ -17,11 +17,9 @@ module.exports = function * () {
         serializeMetadata: false,
     });
     const middleware = [];
-    const handler = osprey.server(
-        Object.assign({}, raml, {
-            RAMLVersion: ramlApi.RAMLVersion(),
-        }, ospreyConfig.server)
-    );
+    const handler = osprey.server(Object.assign({}, raml, {
+        RAMLVersion: ramlApi.RAMLVersion(),
+    }, ospreyConfig.server));
     const error = osprey.errorHandler(ospreyConfig.errorHandler);
 
     if (ospreyConfig.security) {

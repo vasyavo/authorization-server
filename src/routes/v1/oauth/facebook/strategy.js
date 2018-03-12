@@ -21,7 +21,9 @@ module.exports = new FacebookStrategy({
         const data = (profile && profile._json) || {};
         const {
             email,
+            // eslint-disable-next-line camelcase
             first_name,
+            // eslint-disable-next-line camelcase
             last_name,
             id,
             gender,

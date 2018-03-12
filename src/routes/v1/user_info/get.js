@@ -13,7 +13,7 @@ async function signIn(req, res, next) {
             {
                 $match: {
                     accessToken,
-                }
+                },
             },
             {
                 $project: {
@@ -42,7 +42,7 @@ async function signIn(req, res, next) {
                 $project: {
                     email: 1,
                 },
-            }
+            },
         ];
 
         [user] = await TokenCollection

@@ -12,6 +12,7 @@ const strategyOptions = {
 };
 
 router.get('/', require('../../../../utils/scopeQueryToHeader'), passport.authenticate('facebook', strategyOptions));
+
 router.get('/callback', passport.authenticate('facebook', {
     failureRedirect: '/v1/oauth/facebook/failure-callback',
     successRedirect: '/v1/oauth/facebook/success-callback',
