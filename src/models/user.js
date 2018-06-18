@@ -2,7 +2,7 @@ const co = require('co');
 const collectionName = require('../constants/contentType').USER;
 const connection = require('../utils/connection');
 
-module.exports = co(function* () {
+module.exports = co(function * () {
     const db = yield connection;
 
     const collection = yield db.createCollection(collectionName);
@@ -137,8 +137,6 @@ module.exports = co(function* () {
 
     yield collection.createIndex({
         email: 1,
-    }, {
-        unique: true,
     });
 
     return collection;
