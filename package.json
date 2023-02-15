@@ -18,14 +18,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oleksijfomin/authorization-server.git"
+    "url": "git+https://github.com/vasyavo/authorization-server.git"
   },
-  "author": "oleksijfomin",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/oleksijfomin/authorization-server/issues"
-  },
-  "homepage": "https://github.com/oleksijfomin/authorization-server#readme",
   "keywords": [
     "authorization",
     "server",
@@ -34,7 +29,8 @@
   ],
   "pre-push": [
     "lint",
-    "test"
+    "test",
+    "coverage"
   ],
   "dependencies": {
     "body-parser": "^1.18.2",
