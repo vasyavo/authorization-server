@@ -1,5 +1,4 @@
 {
-  "extends": "udosoft",
   "rules": {
     "no-shadow": [0],
     "max-len": [1, 200],
